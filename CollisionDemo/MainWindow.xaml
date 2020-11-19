@@ -6,10 +6,17 @@
         xmlns:local="clr-namespace:CollisionDemo"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="800"
+        Height="600"
         Width="800"
         d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
     <Grid>
-        <local:DrawingControl Balls="{Binding Balls}" />
+        <Border Width="502"
+                Height="502"
+                BorderThickness="1"
+                BorderBrush="Black"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <local:DrawingControl Balls="{Binding Balls}" />
+        </Border>
     </Grid>
 </Window>

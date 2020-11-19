@@ -6,6 +6,8 @@ namespace CollisionDemo
 {
     public class Ball
     {
+        private Rect _boundRect;
+
         public double Mass { get; set; }
 
         public Vector Speed { get; set; }
@@ -14,20 +16,29 @@ namespace CollisionDemo
 
         public double Radius { get; set; }
 
+        public Ball SetBound(double left, double top, double right, double bottom)
+        {
+            var x = left + Radius;
+            var y = top + Radius;
+            _boundRect = new Rect(x, y, right - Radius - x, bottom - Radius - y);
+
+            return this;
+        }
+
         public void Collide(Ball other) => Collide(this, other);
 
         public void CollideHorizontalBound()
         {
             var isCollide = false;
-            if (Position.X - Radius <= 0)
+            if (Position.X <= _boundRect.Left)
             {
-                Position = new Point(Radius, Position.Y);
+                Position = new Point(_boundRect.Left, Position.Y);
                 isCollide = true;
             }
 
-            if (Position.X + Radius >= 500)
+            if (Position.X >= _boundRect.Right)
             {
-                Position = new Point(500 - Radius, Position.Y);
+                Position = new Point(_boundRect.Right, Position.Y);
                 isCollide = true;
             }
 
@@ -40,15 +51,15 @@ namespace CollisionDemo
         public void CollideVerticalBound()
         {
             var isCollide = false;
-            if (Position.Y - Radius <= 0)
+            if (Position.Y <= _boundRect.Top)
             {
-                Position = new Point(Position.X, Radius);
+                Position = new Point(Position.X, _boundRect.Top);
                 isCollide = true;
             }
 
-            if (Position.Y + Radius >= 500)
+            if (Position.Y >= _boundRect.Bottom)
             {
-                Position = new Point(Position.X, 500 - Radius);
+                Position = new Point(Position.X, _boundRect.Bottom);
                 isCollide = true;
             }
 
@@ -58,7 +69,7 @@ namespace CollisionDemo
             }
         }
 
-        public void Next(double millisecond)
+        public void NextFrame(double millisecond)
         {
             var offset = Speed * (millisecond / 1000.0);
             var x = Position.X + offset.X;
@@ -77,7 +88,7 @@ namespace CollisionDemo
             return dx * dx + dy * dy <= distance * distance;
         }
 
-        private static void Collide(Ball b1, Ball b2)
+        private static void Collide(Ball b1, Ball b2, double damping = 1)
         {
             if (!b1.DetectCollision(b2)) return;
 
@@ -87,25 +98,26 @@ namespace CollisionDemo
             positiveDirection.Normalize();
             var tangentDirection = new Vector(positiveDirection.Y, -positiveDirection.X);
 
-            var v1p = b1.Speed * positiveDirection;
-            var v2p = b2.Speed * positiveDirection;
-            var v1t = (b1.Speed * tangentDirection) * tangentDirection;
-            var v2t = (b2.Speed * tangentDirection) * tangentDirection;
+            var vp1 = b1.Speed * positiveDirection;
+            var vp2 = b2.Speed * positiveDirection;
+            var vt1 = b1.Speed * tangentDirection * tangentDirection;
+            var vt2 = b2.Speed * tangentDirection * tangentDirection;
             // 对于中心连线防线上的分速度有：
             // m1v1 + m2v2 = m1v1' + m2v2'
             // m1v1^2 + m2v2^2 = m1v1'^2 + m2v2'^2
             // 联立以上方程，解得：（消元代入，最后可以十字相乘的）
             // => v1' = ((m1v1 + m2v2) + (v2 - v1)m2) / (m1 + m2)
             // => v2' = ((m1v1 + m2v2) + (v1 - v2)m1) / (m1 + m2)
-            var initialMomentum = b1.Mass * v1p + b2.Mass * v2p;
+            var initialMomentum = b1.Mass * vp1 + b2.Mass * vp2;
             var totalMass = b1.Mass + b2.Mass;
-            var v1pNext = ((initialMomentum + (v2p - v1p) * b2.Mass) / totalMass) * positiveDirection;
-            var v2pNext = ((initialMomentum + (v1p - v2p) * b1.Mass) / totalMass) * positiveDirection;
+            var vp1Next = damping * (initialMomentum + (vp2 - vp1) * b2.Mass) / totalMass * positiveDirection;
+            var vp2Next = damping * (initialMomentum + (vp1 - vp2) * b1.Mass) / totalMass * positiveDirection;
 
-            b1.Speed = v1pNext + v1t;
-            b2.Speed = v2pNext + v2t;
+            b1.Speed = vp1Next + vt1;
+            b2.Speed = vp2Next + vt2;
 
-            // 对穿模情况的位置进行修正
+            // 对穿模情况的位置进行修正：只能保证这两个小球不穿模，但移动后会不会与其它小球穿模，无法保证。
+            // 并不能真正解决穿模问题，只是缓解。
             var delta = b1.Radius + b2.Radius - actualDistance;
             if (delta > 0)
             {

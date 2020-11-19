@@ -11,7 +11,7 @@ namespace CollisionDemo
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private readonly Random _random = new Random();
+        private static readonly Random Random = new Random();
         private ObservableCollection<Ball> _balls;
 
         public ObservableCollection<Ball> Balls
@@ -22,20 +22,26 @@ namespace CollisionDemo
 
         public MainWindowViewModel()
         {
-            var balls = Enumerable.Range(0, 20).Select(i =>
+            var balls = Enumerable.Range(0, 50).Select(i =>
             {
-                var w = 15 + 15 * _random.NextDouble();
+                var weight = GetRandom(5, 30);
                 return new Ball
                 {
-                    Mass = Math.Sqrt(w),
-                    Position = new Point(100 + _random.NextDouble() * 300, 100 + _random.NextDouble() * 300),
-                    Radius = w,
-                    Speed = new Vector(_random.NextDouble() * 500 - 100, _random.NextDouble() * 500 - 100)
-                };
+                    Mass = Math.Sqrt(weight),
+                    Position = new Point(GetRandom(100, 400), GetRandom(100, 400)),
+                    Radius = weight,
+                    Speed = new Vector(GetRandom(-100, 100), GetRandom(-100, 100)),
+                    //Gravity = new Vector(0, 9.8),
+                    //Damping = 0.2,
+                }.SetBound(0, 0, 500, 500);
             });
             Balls = new ObservableCollection<Ball>(balls);
         }
 
+        private static double GetRandom(double a, double b)
+        {
+            return a + (b - a) * Random.NextDouble();
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

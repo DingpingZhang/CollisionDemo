@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace CollisionDemo
 {
@@ -21,7 +20,9 @@ namespace CollisionDemo
                     {
                         if (o is DrawingControl self)
                         {
-                            //self.LoopDraw();
+#pragma warning disable 4014
+                            self.LoopDraw();
+#pragma warning restore 4014
                         }
                     }
                 }));
@@ -32,16 +33,12 @@ namespace CollisionDemo
             set => SetValue(BallsProperty, value);
         }
 
-        private readonly ImageSource _image;
         private readonly Brush _brush;
-        private readonly Timer _timer;
 
         public DrawingControl()
         {
-            _timer = new Timer(LoopDraw, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(Interval));
             _drawingVisual = new DrawingVisual();
-            new VisualCollection(this) { _drawingVisual };
-            _image = new BitmapImage(new Uri("pack://application:,,,/CollisionDemo;component/ball.png"));
+            AddVisualChild(_drawingVisual);
             var brush = new RadialGradientBrush { GradientOrigin = new Point(0.7, 0.3) };
             brush.RadiusX = brush.RadiusY = 1;
             brush.GradientStops.Add(new GradientStop(Colors.White, 0));
@@ -50,19 +47,17 @@ namespace CollisionDemo
             _brush = brush;
         }
 
-        private void LoopDraw(object? state)
+        private async Task LoopDraw()
         {
-            try
+            while (true)
             {
-                LoopDraw();
-            }
-            catch (OperationCanceledException)
-            {
-                // Ignore
+                Draw();
+
+                await Task.Delay(TimeSpan.FromMilliseconds(Interval));
             }
         }
 
-        private void LoopDraw()
+        private void Draw()
         {
             var balls = Dispatcher.Invoke(() => Balls);
             if (balls == null || !balls.Any()) return;
@@ -83,12 +78,8 @@ namespace CollisionDemo
                 foreach (var ball in Balls)
                 {
                     dc.DrawEllipse(_brush, null, ball.Position, ball.Radius, ball.Radius);
-                    //dc.DrawImage(_image, new Rect(
-                    //    ball.Position.X - ball.Radius,
-                    //    ball.Position.Y - ball.Radius,
-                    //    ball.Radius * 2,
-                    //    ball.Radius * 2));
                 }
+
                 dc.Close();
             });
 
@@ -96,7 +87,7 @@ namespace CollisionDemo
             {
                 ball.CollideHorizontalBound();
                 ball.CollideVerticalBound();
-                ball.Next(Interval);
+                ball.NextFrame(Interval);
             }
         }
 
