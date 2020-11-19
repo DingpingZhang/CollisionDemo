@@ -71,11 +71,7 @@ namespace CollisionDemo
 
         public void NextFrame(double millisecond)
         {
-            var offset = Speed * (millisecond / 1000.0);
-            var x = Position.X + offset.X;
-            var y = Position.Y + offset.Y;
-
-            Position = new Point(x, y);
+            Position += Speed * (millisecond / 1000.0);
         }
 
         private bool DetectCollision(Ball other)
