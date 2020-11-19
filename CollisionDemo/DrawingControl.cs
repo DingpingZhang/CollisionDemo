@@ -34,6 +34,7 @@ namespace CollisionDemo
         }
 
         private readonly Brush _brush;
+        private readonly Pen _pen = new Pen(Brushes.Blue, 2);
 
         public DrawingControl()
         {
@@ -72,12 +73,19 @@ namespace CollisionDemo
                 }
             }
 
+            foreach (var ball in balls)
+            {
+                ball.CollideHorizontalBound();
+                ball.CollideVerticalBound();
+            }
+
             Dispatcher.Invoke(() =>
             {
                 var dc = _drawingVisual.RenderOpen();
                 foreach (var ball in Balls)
                 {
                     dc.DrawEllipse(_brush, null, ball.Position, ball.Radius, ball.Radius);
+                    dc.DrawLine(_pen, ball.Position, ball.Position + ball.Speed);
                 }
 
                 dc.Close();
@@ -85,8 +93,6 @@ namespace CollisionDemo
 
             foreach (var ball in balls)
             {
-                ball.CollideHorizontalBound();
-                ball.CollideVerticalBound();
                 ball.NextFrame(Interval);
             }
         }
