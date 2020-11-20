@@ -30,7 +30,7 @@ namespace CollisionDemo
                     Mass = Math.Sqrt(weight),
                     Position = new Point(GetRandom(100, 400), GetRandom(100, 400)),
                     Radius = weight,
-                    Speed = new Vector(GetRandom(-100, 100), GetRandom(-100, 100)),
+                    Velocity = new Vector(GetRandom(-100, 100), GetRandom(-100, 100)),
                     //Gravity = new Vector(0, 9.8),
                     //Damping = 0.2,
                 }.SetBound(0, 0, 500, 500);

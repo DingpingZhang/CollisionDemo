@@ -10,7 +10,7 @@ namespace CollisionDemo
 
         public double Mass { get; set; }
 
-        public Vector Speed { get; set; }
+        public Vector Velocity { get; set; }
 
         public Point Position { get; set; }
 
@@ -44,7 +44,7 @@ namespace CollisionDemo
 
             if (isCollide)
             {
-                Speed = new Vector(-Speed.X, Speed.Y);
+                Velocity = new Vector(-Velocity.X, Velocity.Y);
             }
         }
 
@@ -65,13 +65,13 @@ namespace CollisionDemo
 
             if (isCollide)
             {
-                Speed = new Vector(Speed.X, -Speed.Y);
+                Velocity = new Vector(Velocity.X, -Velocity.Y);
             }
         }
 
         public void NextFrame(double millisecond)
         {
-            Position += Speed * (millisecond / 1000.0);
+            Position += Velocity * (millisecond / 1000.0);
         }
 
         private bool DetectCollision(Ball other)
@@ -94,10 +94,10 @@ namespace CollisionDemo
             positiveDirection.Normalize();
             var tangentDirection = new Vector(positiveDirection.Y, -positiveDirection.X);
 
-            var vp1 = b1.Speed * positiveDirection;
-            var vp2 = b2.Speed * positiveDirection;
-            var vt1 = b1.Speed * tangentDirection * tangentDirection;
-            var vt2 = b2.Speed * tangentDirection * tangentDirection;
+            var vp1 = b1.Velocity * positiveDirection;
+            var vp2 = b2.Velocity * positiveDirection;
+            var vt1 = b1.Velocity * tangentDirection * tangentDirection;
+            var vt2 = b2.Velocity * tangentDirection * tangentDirection;
             // 对于中心连线防线上的分速度有：
             // m1v1 + m2v2 = m1v1' + m2v2'
             // m1v1^2 + m2v2^2 = m1v1'^2 + m2v2'^2
@@ -109,8 +109,8 @@ namespace CollisionDemo
             var vp1Next = damping * (initialMomentum + (vp2 - vp1) * b2.Mass) / totalMass * positiveDirection;
             var vp2Next = damping * (initialMomentum + (vp1 - vp2) * b1.Mass) / totalMass * positiveDirection;
 
-            b1.Speed = vp1Next + vt1;
-            b2.Speed = vp2Next + vt2;
+            b1.Velocity = vp1Next + vt1;
+            b2.Velocity = vp2Next + vt2;
 
             // 对穿模情况的位置进行修正：只能保证这两个小球不穿模，但移动后会不会与其它小球穿模，无法保证。
             // 并不能真正解决穿模问题，只是缓解。

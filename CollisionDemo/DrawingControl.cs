@@ -85,7 +85,7 @@ namespace CollisionDemo
                 foreach (var ball in Balls)
                 {
                     dc.DrawEllipse(_brush, null, ball.Position, ball.Radius, ball.Radius);
-                    dc.DrawLine(_pen, ball.Position, ball.Position + ball.Speed);
+                    dc.DrawLine(_pen, ball.Position, ball.Position + ball.Velocity);
                 }
 
                 dc.Close();
