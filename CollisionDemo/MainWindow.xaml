@@ -6,12 +6,12 @@
         xmlns:local="clr-namespace:CollisionDemo"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="600"
-        Width="800"
+        Height="700"
+        Width="1100"
         d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
     <Grid>
-        <Border Width="502"
-                Height="502"
+        <Border Width="1001"
+                Height="602"
                 BorderThickness="1"
                 BorderBrush="Black"
                 VerticalAlignment="Center"

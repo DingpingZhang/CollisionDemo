@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,11 +51,12 @@ namespace CollisionDemo
 
         private async Task LoopDraw()
         {
+            const int interval = (int)Interval;
             while (true)
             {
                 Draw();
 
-                await Task.Delay(TimeSpan.FromMilliseconds(Interval));
+                await Task.Delay(interval);
             }
         }
 
@@ -63,25 +65,8 @@ namespace CollisionDemo
             var balls = Dispatcher.Invoke(() => Balls);
             if (balls == null || !balls.Any()) return;
 
-            //for (int i = 0; i < balls.Count; i++)
-            //{
-            //    for (int j = 0; j < balls.Count; j++)
-            //    {
-            //        if (i == j) continue;
-
-            //        balls[i].Collide(balls[j]);
-            //    }
-            //}
-
-            foreach (var (ball1Index, ball2Index) in BroadPhase.Detect(balls))
-            {
-                var ball1 = balls[ball1Index];
-                var ball2 = balls[ball2Index];
-                if (ball1.DetectNarrowPhase(ball2))
-                {
-                    ball1.CollideOnly(ball2);
-                }
-            }
+            //CollideTest_ForceDetect(balls);
+            CollideTest_BroadPhase(balls);
 
             foreach (var ball in balls)
             {
@@ -104,6 +89,30 @@ namespace CollisionDemo
             foreach (var ball in balls)
             {
                 ball.NextFrame(Interval);
+            }
+        }
+
+        public static void CollideTest_ForceDetect(IReadOnlyList<Ball> balls)
+        {
+            for (int i = 0; i < balls.Count; i++)
+            {
+                for (int j = i + 1; j < balls.Count; j++)
+                {
+                    balls[i].Collide(balls[j]);
+                }
+            }
+        }
+
+        public static void CollideTest_BroadPhase(IReadOnlyList<Ball> balls)
+        {
+            foreach (var (ball1Index, ball2Index) in BroadPhase.Detect(balls))
+            {
+                var ball1 = balls[ball1Index];
+                var ball2 = balls[ball2Index];
+                if (ball1.DetectNarrowPhase(ball2))
+                {
+                    ball1.CollideOnly(ball2);
+                }
             }
         }
 
