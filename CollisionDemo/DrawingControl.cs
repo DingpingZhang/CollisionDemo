@@ -63,13 +63,23 @@ namespace CollisionDemo
             var balls = Dispatcher.Invoke(() => Balls);
             if (balls == null || !balls.Any()) return;
 
-            for (int i = 0; i < balls.Count; i++)
-            {
-                for (int j = 0; j < balls.Count; j++)
-                {
-                    if (i == j) continue;
+            //for (int i = 0; i < balls.Count; i++)
+            //{
+            //    for (int j = 0; j < balls.Count; j++)
+            //    {
+            //        if (i == j) continue;
 
-                    balls[i].Collide(balls[j]);
+            //        balls[i].Collide(balls[j]);
+            //    }
+            //}
+
+            foreach (var (ball1Index, ball2Index) in BroadPhase.Detect(balls))
+            {
+                var ball1 = balls[ball1Index];
+                var ball2 = balls[ball2Index];
+                if (ball1.DetectNarrowPhase(ball2))
+                {
+                    ball1.CollideOnly(ball2);
                 }
             }
 
@@ -85,7 +95,7 @@ namespace CollisionDemo
                 foreach (var ball in Balls)
                 {
                     dc.DrawEllipse(_brush, null, ball.Position, ball.Radius, ball.Radius);
-                    dc.DrawLine(_pen, ball.Position, ball.Position + ball.Velocity);
+                    //dc.DrawLine(_pen, ball.Position, ball.Position + ball.Velocity);
                 }
 
                 dc.Close();

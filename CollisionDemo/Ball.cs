@@ -25,7 +25,15 @@ namespace CollisionDemo
             return this;
         }
 
-        public void Collide(Ball other) => Collide(this, other);
+        public void Collide(Ball other)
+        {
+            if (DetectCollision(other))
+            {
+                Collide(this, other);
+            }
+        }
+
+        public void CollideOnly(Ball other) => Collide(this, other);
 
         public void CollideHorizontalBound()
         {
@@ -74,26 +82,23 @@ namespace CollisionDemo
             Position += Velocity * (millisecond / 1000.0);
         }
 
-        private bool DetectCollision(Ball other)
-        {
-            var dx = Position.X - other.Position.X;
-            var distance = Radius + other.Radius;
-            if (Math.Abs(dx) > distance) return false;
-
-            var dy = Position.Y - other.Position.Y;
-            return dx * dx + dy * dy <= distance * distance;
-        }
-
         public bool DetectNarrowPhase(Ball other)
         {
             var distance = Radius + other.Radius;
             return (Position - other.Position).LengthSquared <= distance * distance;
         }
 
+        private bool DetectCollision(Ball other)
+        {
+            var dx = Position.X - other.Position.X;
+            var distance = Radius + other.Radius;
+            if (Math.Abs(dx) > distance) return false;
+            var dy = Position.Y - other.Position.Y;
+            return dx * dx + dy * dy <= distance * distance;
+        }
+
         private static void Collide(Ball b1, Ball b2)
         {
-            if (!b1.DetectCollision(b2)) return;
-
             // 设：b1 -> b2 为正方向，将速度延中心连线方向正交分解。
             var positiveVector = b2.Position - b1.Position;
             var actualDistance = positiveVector.Length;

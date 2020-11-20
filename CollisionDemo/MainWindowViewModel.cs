@@ -22,9 +22,9 @@ namespace CollisionDemo
 
         public MainWindowViewModel()
         {
-            var balls = Enumerable.Range(0, 50).Select(i =>
+            var balls = Enumerable.Range(0, 2000).Select(i =>
             {
-                var weight = GetRandom(5, 30);
+                var weight = GetRandom(2, 4);
                 return new Ball
                 {
                     Mass = Math.Sqrt(weight),
