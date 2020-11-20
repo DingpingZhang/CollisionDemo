@@ -1,6 +1,6 @@
 # CollisionDemo
 
-Broad-phase collision detection is added to optimize performance, which is significantly improved in the case of large and sparse particles.
+Broad-phase collision detection is added to optimize performance, which will be significantly improved when the number of particles is large and the particles are sparse.
 
 See [here](./BenchmarkReports/BenchmarkTest.ForceDetectVsBroadPhase-report-github.md) for the performance differences between `broad-phase` and `force-detect` .
 
