@@ -84,20 +84,27 @@ namespace CollisionDemo
             return dx * dx + dy * dy <= distance * distance;
         }
 
-        private static void Collide(Ball b1, Ball b2, double damping = 1)
+        public bool DetectNarrowPhase(Ball other)
+        {
+            var distance = Radius + other.Radius;
+            return (Position - other.Position).LengthSquared <= distance * distance;
+        }
+
+        private static void Collide(Ball b1, Ball b2)
         {
             if (!b1.DetectCollision(b2)) return;
 
             // 设：b1 -> b2 为正方向，将速度延中心连线方向正交分解。
-            var positiveDirection = b2.Position - b1.Position;
-            var actualDistance = positiveDirection.Length;
-            positiveDirection.Normalize();
-            var tangentDirection = new Vector(positiveDirection.Y, -positiveDirection.X);
+            var positiveVector = b2.Position - b1.Position;
+            var actualDistance = positiveVector.Length;
+            positiveVector.Normalize();
+            var tangentVector = new Vector(positiveVector.Y, -positiveVector.X);
 
-            var vp1 = b1.Velocity * positiveDirection;
-            var vp2 = b2.Velocity * positiveDirection;
-            var vt1 = b1.Velocity * tangentDirection * tangentDirection;
-            var vt2 = b2.Velocity * tangentDirection * tangentDirection;
+            var vp1 = b1.Velocity * positiveVector;
+            var vp2 = b2.Velocity * positiveVector;
+            var vt1 = b1.Velocity * tangentVector * tangentVector;
+            var vt2 = b2.Velocity * tangentVector * tangentVector;
+
             // 对于中心连线防线上的分速度有：
             // m1v1 + m2v2 = m1v1' + m2v2'
             // m1v1^2 + m2v2^2 = m1v1'^2 + m2v2'^2
@@ -106,8 +113,8 @@ namespace CollisionDemo
             // => v2' = ((m1v1 + m2v2) + (v1 - v2)m1) / (m1 + m2)
             var initialMomentum = b1.Mass * vp1 + b2.Mass * vp2;
             var totalMass = b1.Mass + b2.Mass;
-            var vp1Next = damping * (initialMomentum + (vp2 - vp1) * b2.Mass) / totalMass * positiveDirection;
-            var vp2Next = damping * (initialMomentum + (vp1 - vp2) * b1.Mass) / totalMass * positiveDirection;
+            var vp1Next = (initialMomentum + (vp2 - vp1) * b2.Mass) / totalMass * positiveVector;
+            var vp2Next = (initialMomentum + (vp1 - vp2) * b1.Mass) / totalMass * positiveVector;
 
             b1.Velocity = vp1Next + vt1;
             b2.Velocity = vp2Next + vt2;
@@ -118,8 +125,8 @@ namespace CollisionDemo
             if (delta > 0)
             {
                 delta /= 2;
-                b1.Position += -delta * positiveDirection;
-                b2.Position += delta * positiveDirection;
+                b1.Position += -delta * positiveVector;
+                b2.Position += delta * positiveVector;
             }
         }
     }
