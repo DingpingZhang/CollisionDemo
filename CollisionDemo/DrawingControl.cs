@@ -51,12 +51,21 @@ namespace CollisionDemo
 
         private async Task LoopDraw()
         {
-            const int interval = (int)Interval;
+            var interval = TimeSpan.FromMilliseconds(Interval);
             while (true)
             {
+                DateTime timer = DateTime.Now;
                 Draw();
+                TimeSpan actualInterval = interval - (DateTime.Now - timer);
 
-                await Task.Delay(interval).ConfigureAwait(false);
+                if (actualInterval > TimeSpan.Zero)
+                {
+                    await Task.Delay(actualInterval).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Task.Delay(1).ConfigureAwait(false);
+                }
             }
         }
 

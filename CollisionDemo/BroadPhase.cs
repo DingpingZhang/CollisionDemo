@@ -14,12 +14,12 @@ namespace CollisionDemo
                 if (shapePairs.Count == 0) yield break;
                 if (shapePairs.Remove(shapePair))
                 {
-                    yield return Decombine(shapePair, length);
+                    yield return Decompose(shapePair, length);
                 }
             }
         }
 
-        private static (int quotient, int remainder) Decombine(int dividend, int divisor)
+        private static (int quotient, int remainder) Decompose(int dividend, int divisor)
         {
             var quotient = 0;
             while (dividend > divisor)
