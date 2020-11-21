@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows;
+using PhysicsEngine2D.Net;
 
 namespace CollisionDemo
 {
@@ -29,10 +29,10 @@ namespace CollisionDemo
                 var weight = GetRandom(2, 6);
                 return new Ball
                 {
-                    Mass = Math.Sqrt(weight),
-                    Position = new Point(GetRandom(0, width), GetRandom(0, height)),
+                    Mass = (float)Math.Sqrt(weight),
+                    Position = new Vector2(GetRandom(0, width), GetRandom(0, height)),
                     Radius = weight,
-                    Velocity = new Vector(GetRandom(-100, 100), GetRandom(-100, 100)),
+                    Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
                     //Gravity = new Vector(0, 9.8),
                     //Damping = 0.2,
                 }.SetBound(0, 0, width, height);
@@ -40,9 +40,9 @@ namespace CollisionDemo
             Balls = new ObservableCollection<Ball>(balls);
         }
 
-        private static double GetRandom(double a, double b)
+        private static float GetRandom(float a, float b)
         {
-            return a + (b - a) * Random.NextDouble();
+            return a + (b - a) * (float)Random.NextDouble();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

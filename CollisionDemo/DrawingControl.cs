@@ -5,12 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using PhysicsEngine2D.Net;
 
 namespace CollisionDemo
 {
     public class DrawingControl : FrameworkElement
     {
-        private const double Interval = 1000d / 60;
+        private const float Interval = 1000f / 60;
         private readonly DrawingVisual _drawingVisual;
 
         public static readonly DependencyProperty BallsProperty = DependencyProperty.Register(
@@ -74,8 +75,8 @@ namespace CollisionDemo
             var balls = Dispatcher.Invoke(() => Balls);
             if (balls == null || !balls.Any()) return;
 
-            //CollideTest_ForceDetect(balls);
-            CollideTest_BroadPhase(balls);
+            //CollisionDetection.DetectByForce(balls);
+            CollisionDetection.DetectByBroadAndNarrowPhase(balls);
 
             foreach (var ball in balls)
             {
@@ -88,8 +89,8 @@ namespace CollisionDemo
                 var dc = _drawingVisual.RenderOpen();
                 foreach (var ball in Balls)
                 {
-                    dc.DrawEllipse(_brush, null, ball.Position, ball.Radius, ball.Radius);
-                    //dc.DrawLine(_pen, ball.Position, ball.Position + ball.Velocity);
+                    dc.DrawEllipse(_brush, null, ball.Position.ToPoint(), ball.Radius, ball.Radius);
+                    //dc.DrawLine(_pen, ball.Position.ToPoint(), (ball.Position + ball.Velocity).ToPoint());
                 }
 
                 dc.Close();
@@ -98,30 +99,6 @@ namespace CollisionDemo
             foreach (var ball in balls)
             {
                 ball.NextFrame(Interval);
-            }
-        }
-
-        public static void CollideTest_ForceDetect(IReadOnlyList<Ball> balls)
-        {
-            for (int i = 0; i < balls.Count; i++)
-            {
-                for (int j = i + 1; j < balls.Count; j++)
-                {
-                    balls[i].Collide(balls[j]);
-                }
-            }
-        }
-
-        public static void CollideTest_BroadPhase(IReadOnlyList<Ball> balls)
-        {
-            foreach (var (ball1Index, ball2Index) in BroadPhase.Detect(balls))
-            {
-                var ball1 = balls[ball1Index];
-                var ball2 = balls[ball2Index];
-                if (ball1.DetectNarrowPhase(ball2))
-                {
-                    ball1.CollideOnly(ball2);
-                }
             }
         }
 

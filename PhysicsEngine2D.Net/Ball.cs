@@ -1,26 +1,29 @@
 ﻿using System;
-using System.Windows;
-using Vector = System.Windows.Vector;
+using System.Numerics;
 
-namespace CollisionDemo
+namespace PhysicsEngine2D.Net
 {
     public class Ball
     {
-        private Rect _boundRect;
+        private float _boundLeft;
+        private float _boundTop;
+        private float _boundRight;
+        private float _boundBottom;
 
-        public double Mass { get; set; }
+        public float Mass { get; set; }
 
-        public Vector Velocity { get; set; }
+        public Vector2 Velocity { get; set; }
 
-        public Point Position { get; set; }
+        public Vector2 Position { get; set; }
 
-        public double Radius { get; set; }
+        public float Radius { get; set; }
 
-        public Ball SetBound(double left, double top, double right, double bottom)
+        public Ball SetBound(float left, float top, float right, float bottom)
         {
-            var x = left + Radius;
-            var y = top + Radius;
-            _boundRect = new Rect(x, y, right - Radius - x, bottom - Radius - y);
+            _boundLeft = left + Radius;
+            _boundTop = top + Radius;
+            _boundRight = right - Radius;
+            _boundBottom = bottom - Radius;
 
             return this;
         }
@@ -38,54 +41,54 @@ namespace CollisionDemo
         public void CollideHorizontalBound()
         {
             var isCollide = false;
-            if (Position.X <= _boundRect.Left)
+            if (Position.X <= _boundLeft)
             {
-                Position = new Point(_boundRect.Left, Position.Y);
+                Position = new Vector2(_boundLeft, Position.Y);
                 isCollide = true;
             }
 
-            if (Position.X >= _boundRect.Right)
+            if (Position.X >= _boundRight)
             {
-                Position = new Point(_boundRect.Right, Position.Y);
+                Position = new Vector2(_boundRight, Position.Y);
                 isCollide = true;
             }
 
             if (isCollide)
             {
-                Velocity = new Vector(-Velocity.X, Velocity.Y);
+                Velocity = new Vector2(-Velocity.X, Velocity.Y);
             }
         }
 
         public void CollideVerticalBound()
         {
             var isCollide = false;
-            if (Position.Y <= _boundRect.Top)
+            if (Position.Y <= _boundTop)
             {
-                Position = new Point(Position.X, _boundRect.Top);
+                Position = new Vector2(Position.X, _boundTop);
                 isCollide = true;
             }
 
-            if (Position.Y >= _boundRect.Bottom)
+            if (Position.Y >= _boundBottom)
             {
-                Position = new Point(Position.X, _boundRect.Bottom);
+                Position = new Vector2(Position.X, _boundBottom);
                 isCollide = true;
             }
 
             if (isCollide)
             {
-                Velocity = new Vector(Velocity.X, -Velocity.Y);
+                Velocity = new Vector2(Velocity.X, -Velocity.Y);
             }
         }
 
-        public void NextFrame(double millisecond)
+        public void NextFrame(float millisecond)
         {
-            Position += Velocity * (millisecond / 1000.0);
+            Position += Velocity * (millisecond / 1000f);
         }
 
         public bool DetectNarrowPhase(Ball other)
         {
             var distance = Radius + other.Radius;
-            return (Position - other.Position).LengthSquared <= distance * distance;
+            return (Position - other.Position).LengthSquared() <= distance * distance;
         }
 
         private bool DetectCollision(Ball other)
@@ -101,14 +104,14 @@ namespace CollisionDemo
         {
             // 设：b1 -> b2 为正方向，将速度延中心连线方向正交分解。
             var positiveVector = b2.Position - b1.Position;
-            var actualDistance = positiveVector.Length;
-            positiveVector.Normalize();
-            var tangentVector = new Vector(positiveVector.Y, -positiveVector.X);
+            var actualDistance = positiveVector.Length();
+            positiveVector = Vector2.Normalize(positiveVector);
+            var tangentVector = new Vector2(positiveVector.Y, -positiveVector.X);
 
-            var vp1 = b1.Velocity * positiveVector;
-            var vp2 = b2.Velocity * positiveVector;
-            var vt1 = b1.Velocity * tangentVector * tangentVector;
-            var vt2 = b2.Velocity * tangentVector * tangentVector;
+            var vp1 = Vector2.Dot(b1.Velocity, positiveVector);
+            var vp2 = Vector2.Dot(b2.Velocity, positiveVector);
+            var vt1 = Vector2.Dot(b1.Velocity, tangentVector) * tangentVector;
+            var vt2 = Vector2.Dot(b2.Velocity, tangentVector) * tangentVector;
 
             // 对于中心连线防线上的分速度有：
             // m1v1 + m2v2 = m1v1' + m2v2'

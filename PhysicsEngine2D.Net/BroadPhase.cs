@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CollisionDemo
+namespace PhysicsEngine2D.Net
 {
     public class BroadPhase
     {

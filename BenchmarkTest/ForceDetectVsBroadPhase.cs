@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
+using System.Numerics;
 using BenchmarkDotNet.Attributes;
-using CollisionDemo;
+using PhysicsEngine2D.Net;
 
 namespace BenchmarkTest
 {
@@ -16,11 +16,11 @@ namespace BenchmarkTest
         public int N;
 
         [Params(4, 10)]
-        public double MeanRadius;
+        public float MeanRadius;
 
-        public double Width = 1000;
+        public float Width = 1000;
 
-        public double Height = 1000;
+        public float Height = 1000;
 
         [GlobalSetup]
         public void GlobalSetup()
@@ -31,30 +31,30 @@ namespace BenchmarkTest
                     var weight = GetRandom(MeanRadius / 2, 3 * MeanRadius / 2);
                     return new Ball
                     {
-                        Mass = Math.Sqrt(weight),
-                        Position = new Point(GetRandom(0, Width), GetRandom(0, Height)),
+                        Mass = (float)Math.Sqrt(weight),
+                        Position = new Vector2(GetRandom(0, Width), GetRandom(0, Height)),
                         Radius = weight,
-                        Velocity = new Vector(GetRandom(-100, 100), GetRandom(-100, 100)),
+                        Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
                     }.SetBound(0, 0, Width, Height);
                 })
                 .ToList();
         }
 
         [Benchmark(Baseline = true)]
-        public void CollideTest_ForceDetect()
+        public void DetectByForce()
         {
-            DrawingControl.CollideTest_ForceDetect(_balls);
+            CollisionDetection.DetectByForce(_balls);
         }
 
         [Benchmark]
-        public void CollideTest_BroadPhase()
+        public void DetectByBroadAndNarrowPhase()
         {
-            DrawingControl.CollideTest_BroadPhase(_balls);
+            CollisionDetection.DetectByBroadAndNarrowPhase(_balls);
         }
 
-        private static double GetRandom(double a, double b)
+        private static float GetRandom(float a, float b)
         {
-            return a + (b - a) * Random.NextDouble();
+            return a + (b - a) * (float)Random.NextDouble();
         }
     }
 }
