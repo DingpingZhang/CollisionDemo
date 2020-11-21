@@ -56,7 +56,7 @@ namespace CollisionDemo
             {
                 Draw();
 
-                await Task.Delay(interval);
+                await Task.Delay(interval).ConfigureAwait(false);
             }
         }
 

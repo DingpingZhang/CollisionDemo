@@ -12,11 +12,15 @@ namespace BenchmarkTest
         private static readonly Random Random = new Random();
         private IReadOnlyList<Ball> _balls;
 
-        [Params(1000, 2000, 5000)]
+        [Params(10, 100, 2000, 5000)]
         public int N;
 
         [Params(4, 10)]
         public double MeanRadius;
+
+        public double Width = 1000;
+
+        public double Height = 1000;
 
         [GlobalSetup]
         public void GlobalSetup()
@@ -28,15 +32,15 @@ namespace BenchmarkTest
                     return new Ball
                     {
                         Mass = Math.Sqrt(weight),
-                        Position = new Point(GetRandom(0, 1000), GetRandom(0, 1000)),
+                        Position = new Point(GetRandom(0, Width), GetRandom(0, Height)),
                         Radius = weight,
                         Velocity = new Vector(GetRandom(-100, 100), GetRandom(-100, 100)),
-                    }.SetBound(0, 0, 1000, 1000);
+                    }.SetBound(0, 0, Width, Height);
                 })
                 .ToList();
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public void CollideTest_ForceDetect()
         {
             DrawingControl.CollideTest_ForceDetect(_balls);
