@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ namespace CollisionDemo
 {
     public class DrawingControl : FrameworkElement
     {
-        private const float Interval = 1000f / 60;
+        private const float Interval = 1f / 60;
         private readonly DrawingVisual _drawingVisual;
 
         public static readonly DependencyProperty BallsProperty = DependencyProperty.Register(
@@ -36,7 +35,7 @@ namespace CollisionDemo
         }
 
         private readonly Brush _brush;
-        private readonly Pen _pen = new Pen(Brushes.Blue, 2);
+        //private readonly Pen _pen = new Pen(Brushes.Blue, 2);
 
         public DrawingControl()
         {
@@ -52,12 +51,13 @@ namespace CollisionDemo
 
         private async Task LoopDraw()
         {
-            var interval = TimeSpan.FromMilliseconds(Interval);
+            var interval = TimeSpan.FromSeconds(Interval);
+            var duration = Interval;
             while (true)
             {
-                DateTime timer = DateTime.Now;
-                Draw();
-                TimeSpan actualInterval = interval - (DateTime.Now - timer);
+                var timer = DateTime.Now;
+                Draw(duration);
+                var actualInterval = interval - (DateTime.Now - timer);
 
                 if (actualInterval > TimeSpan.Zero)
                 {
@@ -67,10 +67,13 @@ namespace CollisionDemo
                 {
                     await Task.Delay(1).ConfigureAwait(false);
                 }
+
+                duration = (float)(DateTime.Now - timer).TotalSeconds;
             }
+            // ReSharper disable once FunctionNeverReturns
         }
 
-        private void Draw()
+        private void Draw(float duration)
         {
             var balls = Dispatcher.Invoke(() => Balls);
             if (balls == null || !balls.Any()) return;
@@ -98,7 +101,7 @@ namespace CollisionDemo
 
             foreach (var ball in balls)
             {
-                ball.NextFrame(Interval);
+                ball.NextFrame(duration);
             }
         }
 

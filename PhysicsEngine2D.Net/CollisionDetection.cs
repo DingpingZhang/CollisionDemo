@@ -10,7 +10,12 @@ namespace PhysicsEngine2D.Net
             {
                 for (int j = i + 1; j < balls.Count; j++)
                 {
-                    balls[i].Collide(balls[j]);
+                    var ball1 = balls[i];
+                    var ball2 = balls[j];
+                    if (ball1.DetectNarrowPhase(ball2))
+                    {
+                        ball1.Collide(ball2);
+                    }
                 }
             }
         }
@@ -23,7 +28,7 @@ namespace PhysicsEngine2D.Net
                 var ball2 = balls[ball2Index];
                 if (ball1.DetectNarrowPhase(ball2))
                 {
-                    ball1.CollideOnly(ball2);
+                    ball1.Collide(ball2);
                 }
             }
         }
