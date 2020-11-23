@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using PhysicsEngine2D.Net;
+using PhysicsEngine2D.Net.Core;
 using Vector = System.Windows.Vector;
 
 namespace CollisionDemo
@@ -29,6 +30,28 @@ namespace CollisionDemo
         public static Vector ToVector(this Vector2 vector2)
         {
             return new Vector(vector2.X, vector2.Y);
+        }
+
+        public static void Draw(this Rectangle rectangle, DrawingContext dc)
+        {
+            dc.DrawRectangle(
+                Brushes.Gray,
+                null,
+                new Rect(
+                    new Point(
+                        rectangle.Center.X - rectangle.Width / 2,
+                        rectangle.Center.Y - rectangle.Height / 2),
+                    new Size(rectangle.Width, rectangle.Height)));
+        }
+
+        public static void Draw(this Circle circle, DrawingContext dc)
+        {
+            dc.DrawEllipse(
+                CircleBrush,
+                null,
+                circle.Center.ToPoint(),
+                circle.Radius,
+                circle.Radius);
         }
 
         public static void Draw(this Ball ball, DrawingContext dc)
