@@ -32,12 +32,12 @@ namespace PhysicsEngine2D.Net
                 var positiveVector = ball.Position - Position;
                 var actualDistance = positiveVector.Length();
                 positiveVector /= actualDistance;
-                var delta = Radius + ball.Radius - actualDistance;
-                if (delta > 0)
+                var depth = Radius + ball.Radius - actualDistance;
+                if (depth > 0)
                 {
-                    delta /= 2;
-                    Position += -delta * positiveVector;
-                    ball.Position += delta * positiveVector;
+                    depth /= 2;
+                    Position += -depth * positiveVector;
+                    ball.Position += depth * positiveVector;
                 }
             }
         }

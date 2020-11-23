@@ -33,19 +33,10 @@ namespace CollisionDemo
             set => SetValue(BallsProperty, value);
         }
 
-        private readonly Brush _brush;
-        private readonly Pen _pen = new Pen(Brushes.Blue, 2);
-
         public DrawingControl()
         {
             _drawingVisual = new DrawingVisual();
             AddVisualChild(_drawingVisual);
-            var brush = new RadialGradientBrush { GradientOrigin = new Point(0.7, 0.3) };
-            brush.RadiusX = brush.RadiusY = 1;
-            brush.GradientStops.Add(new GradientStop(Colors.White, 0));
-            brush.GradientStops.Add(new GradientStop(Colors.Black, 1));
-            brush.Freeze();
-            _brush = brush;
         }
 
         private async Task LoopDraw()
@@ -91,8 +82,8 @@ namespace CollisionDemo
                 var dc = _drawingVisual.RenderOpen();
                 foreach (var ball in Balls)
                 {
-                    dc.DrawEllipse(_brush, null, ball.Position.ToPoint(), ball.Radius, ball.Radius);
-                    //dc.DrawLine(_pen, ball.Position.ToPoint(), (ball.Position + ball.Velocity).ToPoint());
+                    ball.Draw(dc);
+                    //ball.DrawVelocity(dc);
                 }
 
                 dc.Close();
