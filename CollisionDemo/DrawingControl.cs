@@ -10,7 +10,6 @@ namespace CollisionDemo
 {
     public class DrawingControl : FrameworkElement
     {
-        private const float Interval = 1f / 60;
         private readonly DrawingVisual _drawingVisual;
 
         public static readonly DependencyProperty BallsProperty = DependencyProperty.Register(
@@ -35,7 +34,7 @@ namespace CollisionDemo
         }
 
         private readonly Brush _brush;
-        //private readonly Pen _pen = new Pen(Brushes.Blue, 2);
+        private readonly Pen _pen = new Pen(Brushes.Blue, 2);
 
         public DrawingControl()
         {
@@ -51,8 +50,8 @@ namespace CollisionDemo
 
         private async Task LoopDraw()
         {
-            var interval = TimeSpan.FromSeconds(Interval);
-            var duration = Interval;
+            var interval = TimeSpan.FromSeconds(Constants.FrameRate);
+            var duration = Constants.FrameRate;
             while (true)
             {
                 var timer = DateTime.Now;

@@ -22,19 +22,23 @@ namespace CollisionDemo
 
         public MainWindowViewModel()
         {
-            const int width = 1000;
-            const int height = 600;
-            var balls = Enumerable.Range(0, 2000).Select(i =>
+            const float width = 1000;
+            const float height = 600;
+            const float minRadius = 2;
+            const float maxRadius = 6;
+            var balls = Enumerable.Range(0, 1000).Select(i =>
             {
-                var weight = GetRandom(2, 6);
+                var weight = GetRandom(minRadius, maxRadius);
                 return new Ball
                 {
                     Mass = (float)Math.Sqrt(weight),
-                    Position = new Vector2(GetRandom(0, width), GetRandom(0, height)),
+                    Position = new Vector2(
+                        GetRandom(maxRadius, width - maxRadius),
+                        GetRandom(maxRadius, height - maxRadius)),
                     Radius = weight,
                     Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
-                    //Gravity = new Vector(0, 9.8),
-                    //Damping = 0.2,
+                    Acceleration = new Vector2(0, 50f),
+                    Damping = 0.8f,
                 }.SetBound(0, 0, width, height);
             });
             Balls = new ObservableCollection<Ball>(balls);

@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Diagnostics;
+using System.Numerics;
 
 namespace PhysicsEngine2D.Net
 {
@@ -19,7 +21,8 @@ namespace PhysicsEngine2D.Net
         public virtual void NextFrame(float duration)
         {
             Position += Velocity * duration + Acceleration * (duration * duration) / 2;
-            Velocity = Damping * Velocity + Acceleration * duration;
+            var damping = Math.Abs(Damping - 1) < Constants.Tolerance ? 1f : (float) Math.Pow(Damping, duration);
+            Velocity = damping * Velocity + Acceleration * duration;
         }
 
         private static void Collide(IParticle p1, IParticle p2)
