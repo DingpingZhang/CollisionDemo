@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace PhysicsEngine2D.Net.Core
+namespace PhysicsEngine2D.Net
 {
     public readonly struct CollisionInfo
     {
@@ -39,6 +39,46 @@ namespace PhysicsEngine2D.Net.Core
             }
 
             return CollisionInfo.Empty;
+        }
+
+        public static void DetectAndResolveLeftWall(ICircle c, float limit)
+        {
+            var wall = limit + c.Radius;
+            if (c.Position.X <= wall)
+            {
+                c.Position = new Vector2(wall, c.Position.Y);
+                c.Velocity = new Vector2(-c.Restitution * c.Velocity.X, c.Velocity.Y);
+            }
+        }
+
+        public static void DetectAndResolveTopWall(ICircle c, float limit)
+        {
+            var wall = limit + c.Radius;
+            if (c.Position.Y <= wall)
+            {
+                c.Position = new Vector2(c.Position.X, wall);
+                c.Velocity = new Vector2(c.Velocity.X, -c.Restitution * c.Velocity.Y);
+            }
+        }
+
+        public static void DetectAndResolveRightWall(ICircle c, float limit)
+        {
+            var wall = limit - c.Radius;
+            if (c.Position.X >= wall)
+            {
+                c.Position = new Vector2(wall, c.Position.Y);
+                c.Velocity = new Vector2(-c.Restitution * c.Velocity.X, c.Velocity.Y);
+            }
+        }
+
+        public static void DetectAndResolveBottomWall(ICircle c, float limit)
+        {
+            var wall = limit - c.Radius;
+            if (c.Position.Y >= wall)
+            {
+                c.Position = new Vector2(c.Position.X, wall);
+                c.Velocity = new Vector2(c.Velocity.X, -c.Restitution * c.Velocity.Y);
+            }
         }
 
         public static void Resolve(in CollisionInfo info)

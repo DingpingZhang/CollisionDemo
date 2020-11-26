@@ -6,7 +6,7 @@ namespace PhysicsEngine2D.Net
 {
     public class BroadPhase
     {
-        public static IEnumerable<(int shape1Index, int shape2Index)> Detect(IReadOnlyList<Ball> balls)
+        public static IEnumerable<(int shape1Index, int shape2Index)> Detect(IReadOnlyList<Circle> balls)
         {
             var length = balls.Count;
             var shapePairs = new HashSet<int>(DetectX(balls));
@@ -32,7 +32,7 @@ namespace PhysicsEngine2D.Net
             return (quotient, dividend);
         }
 
-        private static IEnumerable<int> DetectX(IReadOnlyList<Ball> balls)
+        private static IEnumerable<int> DetectX(IReadOnlyList<Circle> balls)
         {
             var length = balls.Count;
             var points = new (int id, double coordinate, bool isBegin)[length << 1];
@@ -46,7 +46,7 @@ namespace PhysicsEngine2D.Net
             return DetectCore(points);
         }
 
-        private static IEnumerable<int> DetectY(IReadOnlyList<Ball> balls)
+        private static IEnumerable<int> DetectY(IReadOnlyList<Circle> balls)
         {
             var length = balls.Count;
             var points = new (int id, double coordinate, bool isBegin)[length << 1];

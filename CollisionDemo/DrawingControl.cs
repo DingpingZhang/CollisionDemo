@@ -13,7 +13,7 @@ namespace CollisionDemo
         private readonly DrawingVisual _drawingVisual;
 
         public static readonly DependencyProperty BallsProperty = DependencyProperty.Register(
-            "Balls", typeof(ObservableCollection<Ball>), typeof(DrawingControl), new PropertyMetadata(default(ObservableCollection<Ball>),
+            "Balls", typeof(ObservableCollection<Circle>), typeof(DrawingControl), new PropertyMetadata(default(ObservableCollection<Circle>),
                 (o, args) =>
                 {
                     if (args.NewValue != null)
@@ -27,9 +27,9 @@ namespace CollisionDemo
                     }
                 }));
 
-        public ObservableCollection<Ball> Balls
+        public ObservableCollection<Circle> Balls
         {
-            get => (ObservableCollection<Ball>)GetValue(BallsProperty);
+            get => (ObservableCollection<Circle>)GetValue(BallsProperty);
             set => SetValue(BallsProperty, value);
         }
 
@@ -73,8 +73,10 @@ namespace CollisionDemo
 
             foreach (var ball in balls)
             {
-                ball.CollideHorizontalBound();
-                ball.CollideVerticalBound();
+                Collision.DetectAndResolveLeftWall(ball, ball.BoundLeft);
+                Collision.DetectAndResolveTopWall(ball, ball.BoundTop);
+                Collision.DetectAndResolveRightWall(ball, ball.BoundRight);
+                Collision.DetectAndResolveBottomWall(ball, ball.BoundBottom);
             }
 
             Dispatcher.Invoke(() =>

@@ -12,9 +12,9 @@ namespace CollisionDemo
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private static readonly Random Random = new Random();
-        private ObservableCollection<Ball> _balls;
+        private ObservableCollection<Circle> _balls;
 
-        public ObservableCollection<Ball> Balls
+        public ObservableCollection<Circle> Balls
         {
             get => _balls;
             set => SetProperty(ref _balls, value);
@@ -29,7 +29,7 @@ namespace CollisionDemo
             var balls = Enumerable.Range(0, 50).Select(i =>
             {
                 var weight = GetRandom(minRadius, maxRadius);
-                return new Ball
+                return new Circle
                 {
                     Mass = (float)Math.Sqrt(weight),
                     Position = new Vector2(
@@ -41,7 +41,7 @@ namespace CollisionDemo
                     Restitution = 0.9f,
                 }.SetBound(0, 0, width, height);
             });
-            Balls = new ObservableCollection<Ball>(balls);
+            Balls = new ObservableCollection<Circle>(balls);
         }
 
         private static float GetRandom(float a, float b)

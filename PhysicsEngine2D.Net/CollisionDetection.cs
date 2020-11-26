@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using PhysicsEngine2D.Net.Core;
-using static PhysicsEngine2D.Net.Core.CollisionInfo;
+using static PhysicsEngine2D.Net.CollisionInfo;
 
 namespace PhysicsEngine2D.Net
 {
     public static class CollisionDetection
     {
-        public static void DetectByForce(IReadOnlyList<Ball> balls)
+        public static void DetectByForce(IReadOnlyList<Circle> balls)
         {
             for (int i = 0; i < balls.Count; i++)
             {
@@ -23,7 +22,7 @@ namespace PhysicsEngine2D.Net
             }
         }
 
-        public static void DetectByBroadAndNarrowPhase(IReadOnlyList<Ball> balls)
+        public static void DetectByBroadAndNarrowPhase(IReadOnlyList<Circle> balls)
         {
             foreach (var (ball1Index, ball2Index) in BroadPhase.Detect(balls))
             {
