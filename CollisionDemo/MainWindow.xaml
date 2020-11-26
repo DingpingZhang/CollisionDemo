@@ -15,7 +15,8 @@
                 BorderThickness="1"
                 BorderBrush="Black"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center">
+                HorizontalAlignment="Center"
+                Background="Black">
             <local:DrawingControl Balls="{Binding Balls}" />
         </Border>
     </Grid>

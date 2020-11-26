@@ -21,9 +21,9 @@ namespace PhysicsEngine2D.Net
             return this;
         }
 
-        public override void Collide(IParticle other)
+        public override void ResolveCollision(IParticle other)
         {
-            base.Collide(other);
+            base.ResolveCollision(other);
 
             if (other is Ball ball)
             {
@@ -59,7 +59,7 @@ namespace PhysicsEngine2D.Net
 
             if (isCollide)
             {
-                Velocity = new Vector2(-Velocity.X, Velocity.Y);
+                Velocity = new Vector2(-Restitution * Velocity.X, Velocity.Y);
             }
         }
 
@@ -80,7 +80,7 @@ namespace PhysicsEngine2D.Net
 
             if (isCollide)
             {
-                Velocity = new Vector2(Velocity.X, -Velocity.Y);
+                Velocity = new Vector2(Velocity.X, -Restitution * Velocity.Y);
             }
         }
 

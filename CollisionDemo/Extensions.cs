@@ -10,7 +10,8 @@ namespace CollisionDemo
     public static class Extensions
     {
         private static readonly Brush CircleBrush;
-        private static readonly Pen VelocityPen = new Pen(Brushes.Blue, 2);
+        private static readonly Pen VelocityPen = new Pen(Brushes.Blue, 1);
+        private static readonly Pen CirclePen = new Pen(Brushes.White, 1);
 
         static Extensions()
         {
@@ -57,8 +58,8 @@ namespace CollisionDemo
         public static void Draw(this Ball ball, DrawingContext dc)
         {
             dc.DrawEllipse(
-                CircleBrush,
-                null,
+                Brushes.Transparent,
+                CirclePen,
                 ball.Position.ToPoint(),
                 ball.Radius,
                 ball.Radius);

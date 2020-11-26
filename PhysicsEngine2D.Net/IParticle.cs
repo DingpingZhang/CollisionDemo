@@ -12,8 +12,8 @@ namespace PhysicsEngine2D.Net
 
         Vector2 Acceleration { get; set; }
 
-        float Damping { get; set; }
+        float Restitution { get; set; }
 
-        void Collide(IParticle other);
+        void ResolveCollision(IParticle other);
     }
 }
