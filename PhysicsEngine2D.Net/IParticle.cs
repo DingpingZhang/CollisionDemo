@@ -6,6 +6,8 @@ namespace PhysicsEngine2D.Net
     {
         float Mass { get; set; }
 
+        float InverseMass { get; }
+
         Vector2 Position { get; set; }
 
         Vector2 Velocity { get; set; }
