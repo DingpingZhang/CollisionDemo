@@ -83,7 +83,7 @@ namespace CollisionDemo
                 foreach (var ball in Balls)
                 {
                     ball.Draw(dc);
-                    //ball.DrawVelocity(dc);
+                    ball.DrawVelocity(dc);
                 }
 
                 dc.Close();

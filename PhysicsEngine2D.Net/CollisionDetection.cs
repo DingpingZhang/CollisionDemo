@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using PhysicsEngine2D.Net.Core;
+using static PhysicsEngine2D.Net.Core.CollisionInfo;
 
 namespace PhysicsEngine2D.Net
 {
@@ -12,9 +14,10 @@ namespace PhysicsEngine2D.Net
                 {
                     var ball1 = balls[i];
                     var ball2 = balls[j];
-                    if (ball1.DetectNarrowPhase(ball2))
+                    var result = Collision.Detect(ball1, ball2);
+                    if (!result.Equals(Empty))
                     {
-                        ball1.ResolveCollision(ball2);
+                        Collision.Resolve(result);
                     }
                 }
             }
@@ -26,9 +29,10 @@ namespace PhysicsEngine2D.Net
             {
                 var ball1 = balls[ball1Index];
                 var ball2 = balls[ball2Index];
-                if (ball1.DetectNarrowPhase(ball2))
+                var result = Collision.Detect(ball1, ball2);
+                if (!result.Equals(Empty))
                 {
-                    ball1.ResolveCollision(ball2);
+                    Collision.Resolve(result);
                 }
             }
         }

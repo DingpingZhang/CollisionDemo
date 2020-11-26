@@ -2,7 +2,7 @@
 
 namespace PhysicsEngine2D.Net
 {
-    public class Ball : Particle
+    public class Ball : Particle, ICircle
     {
         private float _boundLeft;
         private float _boundTop;
@@ -20,27 +20,6 @@ namespace PhysicsEngine2D.Net
 
             return this;
         }
-
-        //public override void ResolveCollision(IParticle other)
-        //{
-        //    base.ResolveCollision(other);
-
-        //    if (other is Ball ball)
-        //    {
-        //        // 对穿模情况的位置进行修正：只能保证这两个小球不穿模，但移动后会不会与其它小球穿模，无法保证。
-        //        // 并不能真正解决穿模问题，只是缓解。
-        //        var positiveVector = ball.Position - Position;
-        //        var actualDistance = positiveVector.Length();
-        //        positiveVector /= actualDistance;
-        //        var depth = Radius + ball.Radius - actualDistance;
-        //        if (depth > 0)
-        //        {
-        //            depth /= 2;
-        //            Position += -depth * positiveVector;
-        //            ball.Position += depth * positiveVector;
-        //        }
-        //    }
-        //}
 
         public void CollideHorizontalBound()
         {
@@ -82,12 +61,6 @@ namespace PhysicsEngine2D.Net
             {
                 Velocity = new Vector2(Velocity.X, -Restitution * Velocity.Y);
             }
-        }
-
-        public bool DetectNarrowPhase(Ball other)
-        {
-            var distance = Radius + other.Radius;
-            return (Position - other.Position).LengthSquared() <= distance * distance;
         }
     }
 }

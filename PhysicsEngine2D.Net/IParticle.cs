@@ -15,7 +15,17 @@ namespace PhysicsEngine2D.Net
         Vector2 Acceleration { get; set; }
 
         float Restitution { get; set; }
+    }
 
-        void ResolveCollision(IParticle other);
+    public interface ICircle : IParticle
+    {
+        float Radius { get; set; }
+    }
+
+    public interface IRectangle : IParticle
+    {
+        float Width { get; set; }
+
+        float Height { get; set; }
     }
 }

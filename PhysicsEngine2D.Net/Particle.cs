@@ -1,6 +1,4 @@
-﻿using System;
-using System.Numerics;
-using PhysicsEngine2D.Net.Core;
+﻿using System.Numerics;
 
 namespace PhysicsEngine2D.Net
 {
@@ -27,8 +25,6 @@ namespace PhysicsEngine2D.Net
         public Vector2 Acceleration { get; set; } = Vector2.Zero;
 
         public float Restitution { get; set; } = 1f;
-
-        public virtual void ResolveCollision(IParticle other) => Collision.Resolve(this, other);
 
         public virtual void NextFrame(float duration)
         {
