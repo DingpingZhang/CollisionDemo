@@ -26,11 +26,6 @@ namespace PhysicsEngine2D.Net.Core
 
     public static class Collision
     {
-        public static void Detect()
-        {
-
-        }
-
         public static CollisionInfo Detect(ICircle c1, ICircle c2)
         {
             var r = c1.Radius + c2.Radius;
@@ -46,7 +41,7 @@ namespace PhysicsEngine2D.Net.Core
             return CollisionInfo.Empty;
         }
 
-        public static void Resolve(CollisionInfo info)
+        public static void Resolve(in CollisionInfo info)
         {
             // 设：p1 -> p2 为正方向，rel = relative vel = velocity
             // Ref to: https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
