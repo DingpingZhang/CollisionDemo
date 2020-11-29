@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using PhysicsEngine2D.Net.Basic;
 
 namespace PhysicsEngine2D.Net
 {
@@ -7,15 +8,15 @@ namespace PhysicsEngine2D.Net
     {
         public static readonly CollisionInfo Empty = default;
 
-        public IParticle A { get; }
+        public Body A { get; }
 
-        public IParticle B { get; }
+        public Body B { get; }
 
         public float Penetration { get; }
 
         public Vector2 Normal { get; }
 
-        public CollisionInfo(IParticle a, IParticle b, float penetration, Vector2 normal)
+        public CollisionInfo(Body a, Body b, float penetration, Vector2 normal)
         {
             A = a;
             B = b;
@@ -26,7 +27,7 @@ namespace PhysicsEngine2D.Net
 
     public static class Collision
     {
-        public static CollisionInfo Detect(ICircle c1, ICircle c2)
+        public static CollisionResult Detect(Circle c1, Circle c2)
         {
             var r = c1.Radius + c2.Radius;
             var normal = c2.Position - c1.Position;
@@ -35,13 +36,23 @@ namespace PhysicsEngine2D.Net
             {
                 var distance = (float)Math.Sqrt(distanceSquared);
                 normal /= distance;
-                return new CollisionInfo(c1, c2, r - distance, normal);
+                return new CollisionResult { Penetration = r - distance, Normal = normal };
             }
 
-            return CollisionInfo.Empty;
+            return CollisionResult.Empty;
         }
 
-        public static void DetectAndResolveLeftWall(ICircle c, float limit)
+        public static CollisionResult Detect(Rectangle r1, Rectangle r2)
+        {
+            return CollisionResult.Empty;
+        }
+
+        public static CollisionResult Detect(Rectangle r, Circle c)
+        {
+            return CollisionResult.Empty;
+        }
+
+        public static void DetectAndResolveLeftWall(Circle c, float limit)
         {
             var wall = limit + c.Radius;
             if (c.Position.X <= wall)
@@ -93,22 +104,25 @@ namespace PhysicsEngine2D.Net
 
             if (relVelAlongNormal > 0) return;
 
-            var restitution = Math.Min(a.Restitution, b.Restitution);
+            var restitution = Math.Min(a.Material.Restitution, b.Material.Restitution);
 
-            var impulseScalar = -(1 + restitution) * relVelAlongNormal / (a.InverseMass + b.InverseMass);
+            var inverseMassA = a.MassData.InverseMass;
+            var inverseMassB = b.MassData.InverseMass;
+
+            var impulseScalar = -(1 + restitution) * relVelAlongNormal / (inverseMassA + inverseMassB);
             var impulse = impulseScalar * info.Normal;
 
-            a.Velocity -= a.InverseMass * impulse;
-            b.Velocity += b.InverseMass * impulse;
+            a.Velocity -= inverseMassA * impulse;
+            b.Velocity += inverseMassB * impulse;
 
             // 位置修正
             const float percent = 0.2f; // usually 20% to 80%
             const float slop = 0.01f; // usually 0.01 to 0.1
             if (info.Penetration > slop)
             {
-                var correction = info.Penetration / (a.InverseMass + b.InverseMass) * percent * info.Normal;
-                a.Position -= a.InverseMass * correction;
-                b.Position += b.InverseMass * correction;
+                var correction = info.Penetration / (inverseMassA + inverseMassB) * percent * info.Normal;
+                a.Shape.Position -= inverseMassA * correction;
+                b.Shape.Position += inverseMassB * correction;
             }
         }
     }

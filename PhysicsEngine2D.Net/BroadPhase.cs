@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using PhysicsEngine2D.Net.Basic;
 
 namespace PhysicsEngine2D.Net
 {
     public class BroadPhase
     {
-        public static IEnumerable<(int shape1Index, int shape2Index)> Detect(IReadOnlyList<Circle> balls)
+        public static IEnumerable<(int shape1Index, int shape2Index)> Detect(IReadOnlyList<IShape> circles)
         {
-            var length = balls.Count;
-            var shapePairs = new HashSet<int>(DetectX(balls));
-            foreach (var shapePair in DetectY(balls))
+            var length = circles.Count;
+            var shapePairs = new HashSet<int>(DetectX(circles));
+            foreach (var shapePair in DetectY(circles))
             {
                 if (shapePairs.Count == 0) yield break;
                 if (shapePairs.Remove(shapePair))
@@ -24,7 +24,7 @@ namespace PhysicsEngine2D.Net
         {
             var quotient = 0;
             while (dividend > divisor)
-            {
+            { 
                 dividend -= divisor;
                 quotient++;
             }
@@ -32,7 +32,7 @@ namespace PhysicsEngine2D.Net
             return (quotient, dividend);
         }
 
-        private static IEnumerable<int> DetectX(IReadOnlyList<Circle> balls)
+        private static IEnumerable<int> DetectX(IReadOnlyList<IShape> balls)
         {
             var length = balls.Count;
             var points = new (int id, double coordinate, bool isBegin)[length << 1];
@@ -46,7 +46,7 @@ namespace PhysicsEngine2D.Net
             return DetectCore(points);
         }
 
-        private static IEnumerable<int> DetectY(IReadOnlyList<Circle> balls)
+        private static IEnumerable<int> DetectY(IReadOnlyList<IShape> balls)
         {
             var length = balls.Count;
             var points = new (int id, double coordinate, bool isBegin)[length << 1];

@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
-using PhysicsEngine2D.Net;
+using PhysicsEngine2D.Net.Basic;
 using Vector = System.Windows.Vector;
 
 namespace CollisionDemo
@@ -32,7 +32,7 @@ namespace CollisionDemo
             return new Vector(vector2.X, vector2.Y);
         }
 
-        public static void Draw(this IRectangle rectangle, DrawingContext dc)
+        public static void Draw(this Rectangle rectangle, DrawingContext dc)
         {
             dc.DrawRectangle(
                 Brushes.Transparent,
@@ -44,7 +44,7 @@ namespace CollisionDemo
                     new Size(rectangle.Width, rectangle.Height)));
         }
 
-        public static void Draw(this ICircle ball, DrawingContext dc)
+        public static void Draw(this Circle ball, DrawingContext dc)
         {
             dc.DrawEllipse(
                 Brushes.Transparent,
@@ -54,12 +54,12 @@ namespace CollisionDemo
                 ball.Radius);
         }
 
-        public static void DrawVelocity(this IParticle particle, DrawingContext dc)
+        public static void DrawVelocity(this Body particle, DrawingContext dc)
         {
             dc.DrawLine(
                 VelocityPen,
-                particle.Position.ToPoint(),
-                (particle.Position + particle.Velocity).ToPoint());
+                particle.Shape.Position.ToPoint(),
+                (particle.Shape.Position + particle.Velocity).ToPoint());
         }
     }
 }

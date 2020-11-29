@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using PhysicsEngine2D.Net;
+using PhysicsEngine2D.Net.Basic;
 
 namespace CollisionDemo
 {
@@ -12,8 +13,8 @@ namespace CollisionDemo
     {
         private readonly DrawingVisual _drawingVisual;
 
-        public static readonly DependencyProperty BallsProperty = DependencyProperty.Register(
-            "Balls", typeof(ObservableCollection<Circle>), typeof(DrawingControl), new PropertyMetadata(default(ObservableCollection<Circle>),
+        public static readonly DependencyProperty BodiesProperty = DependencyProperty.Register(
+            "Bodies", typeof(ObservableCollection<Body>), typeof(DrawingControl), new PropertyMetadata(default(ObservableCollection<Body>),
                 (o, args) =>
                 {
                     if (args.NewValue != null)
@@ -27,11 +28,13 @@ namespace CollisionDemo
                     }
                 }));
 
-        public ObservableCollection<Circle> Balls
+        public ObservableCollection<Body> Bodies
         {
-            get => (ObservableCollection<Circle>)GetValue(BallsProperty);
-            set => SetValue(BallsProperty, value);
+            get => (ObservableCollection<Body>)GetValue(BodiesProperty);
+            set => SetValue(BodiesProperty, value);
         }
+
+        private readonly DrawingShape _drawingShape = new DrawingShape();
 
         public DrawingControl()
         {
@@ -65,43 +68,41 @@ namespace CollisionDemo
 
         private void Draw(float duration)
         {
-            var balls = Dispatcher.Invoke(() => Balls);
-            if (balls == null || !balls.Any()) return;
+            var bodies = Dispatcher.Invoke(() => Bodies);
+            if (bodies == null || !bodies.Any()) return;
 
             //CollisionDetection.DetectByForce(balls);
-            CollisionDetection.DetectByBroadAndNarrowPhase(balls);
+            CollisionDetection.DetectByBroadAndNarrowPhase(bodies);
 
-            foreach (var ball in balls)
+            foreach (var body in bodies)
             {
-                Collision.DetectAndResolveLeftWall(ball, ball.BoundLeft);
-                Collision.DetectAndResolveTopWall(ball, ball.BoundTop);
-                Collision.DetectAndResolveRightWall(ball, ball.BoundRight);
-                Collision.DetectAndResolveBottomWall(ball, ball.BoundBottom);
+                Collision.DetectAndResolveLeftWall(body, body.BoundLeft);
+                Collision.DetectAndResolveTopWall(body, body.BoundTop);
+                Collision.DetectAndResolveRightWall(body, body.BoundRight);
+                Collision.DetectAndResolveBottomWall(body, body.BoundBottom);
             }
 
             Dispatcher.Invoke(() =>
             {
                 var dc = _drawingVisual.RenderOpen();
-                foreach (var ball in Balls)
+                _drawingShape.SetDrawingContext(dc);
+                foreach (var body in Bodies)
                 {
-                    ball.Draw(dc);
-                    ball.DrawVelocity(dc);
+                    body.Shape.Accept(_drawingShape);
+                    body.DrawVelocity(dc);
                 }
 
                 dc.Close();
             });
 
-            foreach (var ball in balls)
+            foreach (var body in bodies)
             {
-                ball.NextFrame(duration);
+                body.NextFrame(duration);
             }
         }
 
         protected override int VisualChildrenCount => 1;
 
-        protected override Visual GetVisualChild(int index)
-        {
-            return _drawingVisual;
-        }
+        protected override Visual GetVisualChild(int index) => _drawingVisual;
     }
 }
