@@ -15,7 +15,7 @@ namespace PhysicsEngine2D.Net
                 {
                     var ball1 = bodies[i];
                     var ball2 = bodies[j];
-                    var result = Collision.Detect(ball1, ball2);
+                    var result = ball1.Collide(ball2);
                     if (!result.Equals(Empty))
                     {
                         Collision.Resolve(result);
@@ -30,7 +30,7 @@ namespace PhysicsEngine2D.Net
             {
                 var ball1 = bodies[ball1Index];
                 var ball2 = bodies[ball2Index];
-                var result = Collision.Detect(ball1, ball2);
+                var result = ball1.Collide(ball2);
                 if (!result.Equals(Empty))
                 {
                     Collision.Resolve(result);

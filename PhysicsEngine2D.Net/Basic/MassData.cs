@@ -2,9 +2,19 @@
 {
     public struct MassData
     {
-        public float Mass { get; set; }
+        private float _mass;
 
-        public float InverseMass { get; set; }
+        public float Mass
+        {
+            get => _mass;
+            set
+            {
+                InverseMass = 1 / value;
+                _mass = value;
+            }
+        }
+
+        public float InverseMass { get; private set; }
 
         public float Inertia { get; set; }
 

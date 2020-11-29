@@ -2,7 +2,7 @@
 
 namespace PhysicsEngine2D.Net.Basic
 {
-    public interface IShape : ICollideable
+    public interface IShape : ICollideable, IAABB
     {
         Vector2 Position { get; set; }
 

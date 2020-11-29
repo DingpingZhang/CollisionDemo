@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using PhysicsEngine2D.Net.Basic;
 
 namespace PhysicsEngine2D.Net
 {
     public class BroadPhase
     {
-        public static IEnumerable<(int shape1Index, int shape2Index)> Detect(IReadOnlyList<IShape> circles)
+        public static IEnumerable<(int shape1Index, int shape2Index)> Detect(IReadOnlyList<IAABB> rects)
         {
-            var length = circles.Count;
-            var shapePairs = new HashSet<int>(DetectX(circles));
-            foreach (var shapePair in DetectY(circles))
-            {
-                if (shapePairs.Count == 0) yield break;
-                if (shapePairs.Remove(shapePair))
-                {
-                    yield return Decompose(shapePair, length);
-                }
-            }
+            var length = rects.Count;
+            var xPairs = DetectCore(rects, rect => rect.Left, rect => rect.Right);
+            var yPairs = DetectCore(rects, rect => rect.Top, rect => rect.Bottom);
+
+            return yPairs.TakeWhile(yPair => xPairs.Count != 0)
+                .Where(yPair => xPairs.Remove(yPair))
+                .Select(pair => Decompose(pair, length));
         }
 
         private static (int quotient, int remainder) Decompose(int dividend, int divisor)
         {
             var quotient = 0;
             while (dividend > divisor)
-            { 
+            {
                 dividend -= divisor;
                 quotient++;
             }
@@ -32,49 +30,33 @@ namespace PhysicsEngine2D.Net
             return (quotient, dividend);
         }
 
-        private static IEnumerable<int> DetectX(IReadOnlyList<IShape> balls)
+        private static HashSet<int> DetectCore(
+            IReadOnlyList<IAABB> rects,
+            Func<IAABB, float> getMax,
+            Func<IAABB, float> getMin)
         {
-            var length = balls.Count;
-            var points = new (int id, double coordinate, bool isBegin)[length << 1];
+            var length = rects.Count;
+            Span<(int id, double coordinate, bool isBegin)> points = stackalloc (int id, double coordinate, bool isBegin)[length << 1];
             for (int i = 0; i < length; i++)
             {
-                var ball = balls[i];
-                points[2 * i] = (id: i, coordinate: ball.Position.X - ball.Radius, isBegin: true);
-                points[2 * i + 1] = (id: i, coordinate: ball.Position.X + ball.Radius, isBegin: false);
+                var rect = rects[i];
+                points[2 * i] = (id: i, coordinate: getMax(rect), isBegin: true);
+                points[2 * i + 1] = (id: i, coordinate: getMin(rect), isBegin: false);
             }
 
-            return DetectCore(points);
-        }
-
-        private static IEnumerable<int> DetectY(IReadOnlyList<IShape> balls)
-        {
-            var length = balls.Count;
-            var points = new (int id, double coordinate, bool isBegin)[length << 1];
-            for (int i = 0; i < length; i++)
-            {
-                var ball = balls[i];
-                points[2 * i] = (id: i, coordinate: ball.Position.Y - ball.Radius, isBegin: true);
-                points[2 * i + 1] = (id: i, coordinate: ball.Position.Y + ball.Radius, isBegin: false);
-            }
-
-            return DetectCore(points);
-        }
-
-        private static IEnumerable<int> DetectCore((int id, double coordinate, bool isBegin)[] points)
-        {
-            var length = points.Length >> 1;
-            Array.Sort(points, (x, y) => (int)(x.coordinate - y.coordinate));
+            points.Sort((x, y) => (int)(x.coordinate - y.coordinate));
 
             var activatedIds = new HashSet<int>();
+            var result = new HashSet<int>();
             foreach (var (id, _, isBegin) in points)
             {
                 if (isBegin)
                 {
                     foreach (var activatedId in activatedIds)
                     {
-                        yield return activatedId > id
+                        result.Add(activatedId > id
                             ? id * length + activatedId
-                            : activatedId * length + id;
+                            : activatedId * length + id);
                     }
 
                     activatedIds.Add(id);
@@ -84,6 +66,8 @@ namespace PhysicsEngine2D.Net
                     activatedIds.Remove(id);
                 }
             }
+
+            return result;
         }
     }
 }

@@ -4,13 +4,14 @@ using System.Linq;
 using System.Numerics;
 using BenchmarkDotNet.Attributes;
 using PhysicsEngine2D.Net;
+using PhysicsEngine2D.Net.Basic;
 
 namespace BenchmarkTest
 {
     public class ForceDetectVsBroadPhase
     {
         private static readonly Random Random = new Random();
-        private IReadOnlyList<Ball> _balls;
+        private IReadOnlyList<Body> _bodies;
 
         [Params(10, 100, 2000, 5000)]
         public int N;
@@ -25,17 +26,20 @@ namespace BenchmarkTest
         [GlobalSetup]
         public void GlobalSetup()
         {
-            _balls = Enumerable.Range(0, N)
+            _bodies = Enumerable.Range(0, N)
                 .Select(i =>
                 {
                     var weight = GetRandom(MeanRadius / 2, 3 * MeanRadius / 2);
-                    return new Ball
+                    return new Body
                     {
-                        Mass = (float)Math.Sqrt(weight),
-                        Position = new Vector2(GetRandom(0, Width), GetRandom(0, Height)),
-                        Radius = weight,
+                        MassData = new MassData { Mass = (float)Math.Sqrt(weight) },
+                        Shape = new Circle
+                        {
+                            Position = new Vector2(GetRandom(0, Width), GetRandom(0, Height)),
+                            Radius = weight,
+                        },
                         Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
-                    }.SetBound(0, 0, Width, Height);
+                    };
                 })
                 .ToList();
         }
@@ -43,13 +47,13 @@ namespace BenchmarkTest
         [Benchmark(Baseline = true)]
         public void DetectByForce()
         {
-            CollisionDetection.DetectByForce(_balls);
+            CollisionDetection.DetectByForce(_bodies);
         }
 
         [Benchmark]
         public void DetectByBroadAndNarrowPhase()
         {
-            CollisionDetection.DetectByBroadAndNarrowPhase(_balls);
+            CollisionDetection.DetectByBroadAndNarrowPhase(_bodies);
         }
 
         private static float GetRandom(float a, float b)

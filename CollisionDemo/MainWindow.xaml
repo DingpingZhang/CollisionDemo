@@ -8,16 +8,16 @@
         Title="MainWindow"
         Height="700"
         Width="1100"
+        Background="Black"
         d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
     <Grid>
         <Border Width="1001"
                 Height="602"
                 BorderThickness="1"
-                BorderBrush="Black"
+                BorderBrush="White"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Background="Black">
-            <local:DrawingControl Balls="{Binding Balls}" />
+                HorizontalAlignment="Center">
+            <local:DrawingControl Bodies="{Binding Bodies}" />
         </Border>
     </Grid>
 </Window>

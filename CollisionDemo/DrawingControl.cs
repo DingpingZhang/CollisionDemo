@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -76,10 +77,10 @@ namespace CollisionDemo
 
             foreach (var body in bodies)
             {
-                Collision.DetectAndResolveLeftWall(body, body.BoundLeft);
-                Collision.DetectAndResolveTopWall(body, body.BoundTop);
-                Collision.DetectAndResolveRightWall(body, body.BoundRight);
-                Collision.DetectAndResolveBottomWall(body, body.BoundBottom);
+                Collision.DetectAndResolveLeftWall(body);
+                Collision.DetectAndResolveTopWall(body);
+                Collision.DetectAndResolveRightWall(body, 1000);
+                Collision.DetectAndResolveBottomWall(body, 600);
             }
 
             Dispatcher.Invoke(() =>
@@ -89,7 +90,7 @@ namespace CollisionDemo
                 foreach (var body in Bodies)
                 {
                     body.Shape.Accept(_drawingShape);
-                    body.DrawVelocity(dc);
+                    //body.DrawVelocity(dc);
                 }
 
                 dc.Close();
@@ -97,9 +98,13 @@ namespace CollisionDemo
 
             foreach (var body in bodies)
             {
-                body.NextFrame(duration);
+                body.Shape.Position += body.Velocity * duration + Gravity * (duration * duration) / 2;
+                body.Velocity += Gravity * duration;
             }
         }
+
+        // TODO
+        private static readonly Vector2 Gravity = new Vector2(0, 50f);
 
         protected override int VisualChildrenCount => 1;
 

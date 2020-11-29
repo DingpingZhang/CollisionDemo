@@ -4,33 +4,12 @@ using PhysicsEngine2D.Net.Basic;
 
 namespace PhysicsEngine2D.Net
 {
-    public readonly struct CollisionInfo
-    {
-        public static readonly CollisionInfo Empty = default;
-
-        public Body A { get; }
-
-        public Body B { get; }
-
-        public float Penetration { get; }
-
-        public Vector2 Normal { get; }
-
-        public CollisionInfo(Body a, Body b, float penetration, Vector2 normal)
-        {
-            A = a;
-            B = b;
-            Penetration = penetration;
-            Normal = normal;
-        }
-    }
-
     public static class Collision
     {
         public static CollisionResult Detect(Circle c1, Circle c2)
         {
             var r = c1.Radius + c2.Radius;
-            var normal = c2.Position - c1.Position;
+            var normal = c1.Position - c2.Position;
             var distanceSquared = normal.LengthSquared();
             if (distanceSquared <= r * r)
             {
@@ -42,59 +21,53 @@ namespace PhysicsEngine2D.Net
             return CollisionResult.Empty;
         }
 
-        public static CollisionResult Detect(Rectangle r1, Rectangle r2)
-        {
-            return CollisionResult.Empty;
-        }
+        public static CollisionResult Detect(Rectangle r1, Rectangle r2) => CollisionResult.Empty;
 
-        public static CollisionResult Detect(Rectangle r, Circle c)
-        {
-            return CollisionResult.Empty;
-        }
+        public static CollisionResult Detect(Rectangle r, Circle c) => CollisionResult.Empty;
 
-        public static void DetectAndResolveLeftWall(Circle c, float limit)
+        public static void DetectAndResolveLeftWall(Body c, float limit = 0)
         {
-            var wall = limit + c.Radius;
-            if (c.Position.X <= wall)
+            var shape = c.Shape;
+            if (shape.Left <= limit)
             {
-                c.Position = new Vector2(wall, c.Position.Y);
-                c.Velocity = new Vector2(-c.Restitution * c.Velocity.X, c.Velocity.Y);
+                shape.Position = new Vector2((shape.Right - shape.Left) / 2, shape.Position.Y);
+                c.Velocity = new Vector2(-c.Material.Restitution * c.Velocity.X, c.Velocity.Y);
             }
         }
 
-        public static void DetectAndResolveTopWall(ICircle c, float limit)
+        public static void DetectAndResolveTopWall(Body c, float limit = 0)
         {
-            var wall = limit + c.Radius;
-            if (c.Position.Y <= wall)
+            var shape = c.Shape;
+            if (shape.Top <= limit)
             {
-                c.Position = new Vector2(c.Position.X, wall);
-                c.Velocity = new Vector2(c.Velocity.X, -c.Restitution * c.Velocity.Y);
+                shape.Position = new Vector2(shape.Position.X, (shape.Bottom - shape.Top) / 2);
+                c.Velocity = new Vector2(c.Velocity.X, -c.Material.Restitution * c.Velocity.Y);
             }
         }
 
-        public static void DetectAndResolveRightWall(ICircle c, float limit)
+        public static void DetectAndResolveRightWall(Body c, float limit)
         {
-            var wall = limit - c.Radius;
-            if (c.Position.X >= wall)
+            var shape = c.Shape;
+            if (shape.Right >= limit)
             {
-                c.Position = new Vector2(wall, c.Position.Y);
-                c.Velocity = new Vector2(-c.Restitution * c.Velocity.X, c.Velocity.Y);
+                shape.Position = new Vector2(limit - (shape.Right - shape.Left) / 2, shape.Position.Y);
+                c.Velocity = new Vector2(-c.Material.Restitution * c.Velocity.X, c.Velocity.Y);
             }
         }
 
-        public static void DetectAndResolveBottomWall(ICircle c, float limit)
+        public static void DetectAndResolveBottomWall(Body c, float limit)
         {
-            var wall = limit - c.Radius;
-            if (c.Position.Y >= wall)
+            var shape = c.Shape;
+            if (shape.Bottom >= limit)
             {
-                c.Position = new Vector2(c.Position.X, wall);
-                c.Velocity = new Vector2(c.Velocity.X, -c.Restitution * c.Velocity.Y);
+                shape.Position = new Vector2(shape.Position.X, limit - (shape.Bottom - shape.Top) / 2);
+                c.Velocity = new Vector2(c.Velocity.X, -c.Material.Restitution * c.Velocity.Y);
             }
         }
 
         public static void Resolve(in CollisionInfo info)
         {
-            // 设：p1 -> p2 为正方向，rel = relative vel = velocity
+            // 设：a -> b 为正方向，rel = relative vel = velocity
             // Ref to: https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
             var a = info.A;
             var b = info.B;

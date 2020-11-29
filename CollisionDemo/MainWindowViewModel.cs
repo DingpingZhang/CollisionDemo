@@ -5,43 +5,45 @@ using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using PhysicsEngine2D.Net;
+using PhysicsEngine2D.Net.Basic;
 
 namespace CollisionDemo
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private static readonly Random Random = new Random();
-        private ObservableCollection<Circle> _balls;
+        private ObservableCollection<Body> _bodies;
 
-        public ObservableCollection<Circle> Balls
+        public ObservableCollection<Body> Bodies
         {
-            get => _balls;
-            set => SetProperty(ref _balls, value);
+            get => _bodies;
+            set => SetProperty(ref _bodies, value);
         }
 
         public MainWindowViewModel()
         {
             const float width = 1000;
             const float height = 600;
-            const float minRadius = 20;
-            const float maxRadius = 30;
-            var balls = Enumerable.Range(0, 50).Select(i =>
+            const float minRadius = 4;
+            const float maxRadius = 6;
+            var bodies = Enumerable.Range(0, 2000).Select(i =>
             {
                 var weight = GetRandom(minRadius, maxRadius);
-                return new Circle
+                return new Body
                 {
-                    Mass = (float)Math.Sqrt(weight),
-                    Position = new Vector2(
-                        GetRandom(maxRadius, width - maxRadius),
-                        GetRandom(maxRadius, height - maxRadius)),
-                    Radius = weight,
-                    //Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
-                    Acceleration = new Vector2(0, 100f),
-                    Restitution = 0.9f,
-                }.SetBound(0, 0, width, height);
+                    MassData = new MassData { Mass = (float)Math.Sqrt(weight) },
+                    Shape = new Circle
+                    {
+                        Position = new Vector2(
+                            GetRandom(maxRadius, width - maxRadius),
+                            GetRandom(maxRadius, height - maxRadius)),
+                        Radius = weight,
+                    },
+                    Material = new Material { Restitution = 0.99f },
+                    Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
+                };
             });
-            Balls = new ObservableCollection<Circle>(balls);
+            Bodies = new ObservableCollection<Body>(bodies);
         }
 
         private static float GetRandom(float a, float b)
