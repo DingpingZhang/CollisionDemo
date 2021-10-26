@@ -4,20 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CollisionDemo"
+        xmlns:controls="clr-namespace:CollisionDemo.Controls"
         mc:Ignorable="d"
         Title="MainWindow"
         Height="700"
         Width="1100"
-        Background="Black"
         d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
     <Grid>
-        <Border Width="1001"
-                Height="602"
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <!--<Border Background="Black"
                 BorderThickness="1"
-                BorderBrush="White"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center">
-            <local:DrawingControl Balls="{Binding Balls}" />
-        </Border>
+                BorderBrush="Aqua"
+                Margin="200">
+            <local:DrawingControl Balls="{Binding Balls}" Background="Red"/>
+        </Border>-->
+        <!--<local:DrawingControl Balls="{Binding Balls}" />-->
+        <controls:GdiCanvas Shapes="{Binding Balls}" />
     </Grid>
 </Window>

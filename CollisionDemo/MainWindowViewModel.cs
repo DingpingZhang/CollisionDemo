@@ -26,7 +26,7 @@ namespace CollisionDemo
             const float height = 600;
             const float minRadius = 20;
             const float maxRadius = 30;
-            var balls = Enumerable.Range(0, 50).Select(i =>
+            var balls = Enumerable.Range(0, 30).Select(i =>
             {
                 var weight = GetRandom(minRadius, maxRadius);
                 return new Circle
@@ -36,9 +36,9 @@ namespace CollisionDemo
                         GetRandom(maxRadius, width - maxRadius),
                         GetRandom(maxRadius, height - maxRadius)),
                     Radius = weight,
-                    //Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
-                    Acceleration = new Vector2(0, 100f),
-                    Restitution = 0.9f,
+                    Velocity = new Vector2(GetRandom(-100, 100), GetRandom(-100, 100)),
+                    //Acceleration = new Vector2(0, 100f),
+                    Restitution = 1f,
                 }.SetBound(0, 0, width, height);
             });
             Balls = new ObservableCollection<Circle>(balls);

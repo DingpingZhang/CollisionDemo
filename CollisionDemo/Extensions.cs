@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using PhysicsEngine2D.Net;
@@ -9,7 +10,10 @@ namespace CollisionDemo
     public static class Extensions
     {
         private static readonly Brush CircleBrush;
-        private static readonly Pen VelocityPen = new Pen(Brushes.Blue, 1);
+        private static readonly Pen VelocityPen = new Pen(Brushes.Blue, 1)
+        {
+            
+        };
         private static readonly Pen CirclePen = new Pen(Brushes.White, 1);
 
         static Extensions()
