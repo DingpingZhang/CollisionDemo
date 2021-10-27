@@ -15,14 +15,15 @@
             <ColumnDefinition />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <!--<local:DrawingControl x:Name="Canvas" Balls="{Binding Balls}" />-->
-        <!--<controls:GdiCanvas Shapes="{Binding Balls}" />-->
+
         <Border BorderThickness="1"
                 BorderBrush="Aqua">
+            <!--<local:DrawingControl x:Name="Canvas"
+                                  Balls="{Binding Balls}" />-->
+            <!--<controls:GdiCanvas x:Name="Canvas"
+                                Shapes="{Binding Balls}" />-->
             <controls:SkiaCanvas x:Name="Canvas"
                                  Shapes="{Binding Balls}" />
-            <!--<controls:SkiaImageControl x:Name="Canvas"
-                                       Shapes="{Binding Balls}" />-->
         </Border>
         <TextBlock Grid.Column="1"
                    Text="{Binding Path=FrameRate, ElementName=Canvas, StringFormat='{}{0:00.000} fps'}"

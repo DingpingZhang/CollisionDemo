@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using PhysicsEngine2D.Net;
 using Brushes = System.Windows.Media.Brushes;
-using Matrix = System.Windows.Media.Matrix;
 using Pen = System.Windows.Media.Pen;
-using Point = System.Drawing.Point;
 using Size = System.Windows.Size;
 
 namespace CollisionDemo
@@ -21,19 +15,7 @@ namespace CollisionDemo
         private readonly DrawingVisual _drawingVisual;
 
         public static readonly DependencyProperty BallsProperty = DependencyProperty.Register(
-            "Balls", typeof(ObservableCollection<Circle>), typeof(DrawingControl), new PropertyMetadata(default(ObservableCollection<Circle>),
-                (o, args) =>
-                {
-                    if (args.NewValue != null)
-                    {
-                        if (o is DrawingControl self)
-                        {
-#pragma warning disable 4014
-                            //self.LoopDraw();
-#pragma warning restore 4014
-                        }
-                    }
-                }));
+            "Balls", typeof(ObservableCollection<Circle>), typeof(DrawingControl), new PropertyMetadata(default(ObservableCollection<Circle>)));
 
         public ObservableCollection<Circle> Balls
         {
@@ -46,7 +28,7 @@ namespace CollisionDemo
 
         public double FrameRate
         {
-            get { return (double) GetValue(FrameRateProperty); }
+            get { return (double)GetValue(FrameRateProperty); }
             set { SetValue(FrameRateProperty, value); }
         }
 
@@ -64,12 +46,10 @@ namespace CollisionDemo
                 {
                     double duration = renderingEventArgs.RenderingTime.TotalSeconds - lastRenderTime.TotalSeconds;
                     Draw((float)(renderingEventArgs.RenderingTime.TotalSeconds - lastRenderTime.TotalSeconds));
-                    //DrawByGdiPlus((float)(renderingEventArgs.RenderingTime.TotalSeconds - lastRenderTime.TotalSeconds));
                     lastRenderTime = renderingEventArgs.RenderingTime;
                     SetCurrentValue(FrameRateProperty, 1 / duration);
                 }
             };
-            //InitializeGdiPlus();
         }
 
         private void Draw(float duration)
@@ -91,11 +71,6 @@ namespace CollisionDemo
             Dispatcher.Invoke(() =>
             {
                 var dc = _drawingVisual.RenderOpen();
-                //foreach (var ball in Balls)
-                //{
-                //    ball.Draw(dc);
-                //    ball.DrawVelocity(dc);
-                //}
                 for (int i = 0; i < Balls.Count; i++)
                 {
                     for (int j = i + 1; j < Balls.Count; j++)

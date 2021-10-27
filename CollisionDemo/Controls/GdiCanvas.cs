@@ -28,11 +28,19 @@ namespace CollisionDemo.Controls
 
         public static readonly DependencyProperty ShapesProperty = DependencyProperty.Register(
             "Shapes", typeof(ObservableCollection<Circle>), typeof(GdiCanvas), new PropertyMetadata(default(ObservableCollection<Circle>)));
+        public static readonly DependencyProperty FrameRateProperty = DependencyProperty.Register(
+            "FrameRate", typeof(double), typeof(GdiCanvas), new PropertyMetadata(default(double)));
 
         public ObservableCollection<Circle> Shapes
         {
             get => (ObservableCollection<Circle>)GetValue(ShapesProperty);
             set => SetValue(ShapesProperty, value);
+        }
+
+        public double FrameRate
+        {
+            get => (double)GetValue(FrameRateProperty);
+            set => SetValue(FrameRateProperty, value);
         }
 
         public GdiCanvas()
@@ -42,8 +50,10 @@ namespace CollisionDemo.Controls
             {
                 if (args is RenderingEventArgs renderingEventArgs && renderingEventArgs.RenderingTime != lastRenderTime)
                 {
+                    double duration = renderingEventArgs.RenderingTime.TotalSeconds - lastRenderTime.TotalSeconds;
                     DrawByGdiPlus((float)(renderingEventArgs.RenderingTime.TotalSeconds - lastRenderTime.TotalSeconds));
                     lastRenderTime = renderingEventArgs.RenderingTime;
+                    SetCurrentValue(FrameRateProperty, 1 / duration);
                 }
             };
         }
