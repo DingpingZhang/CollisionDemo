@@ -18,8 +18,8 @@
 
         <Border BorderThickness="1"
                 BorderBrush="Aqua">
-            <!--<local:DrawingControl x:Name="Canvas"
-                                  Balls="{Binding Balls}" />-->
+            <!--<controls:DrawingContextCanvas x:Name="Canvas"
+                                           Shapes="{Binding Balls}" />-->
             <!--<controls:GdiCanvas x:Name="Canvas"
                                 Shapes="{Binding Balls}" />-->
             <controls:SkiaCanvas x:Name="Canvas"
