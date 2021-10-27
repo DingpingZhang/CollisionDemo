@@ -10,22 +10,22 @@
         Height="700"
         Width="1100"
         d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
+    <Grid Background="Black">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <!--<Border Background="Black"
-                BorderThickness="1"
-                BorderBrush="Aqua"
-                Margin="200">
-            <local:DrawingControl Balls="{Binding Balls}" Background="Red"/>
-        </Border>-->
-        <!--<local:DrawingControl Balls="{Binding Balls}" />-->
-        <controls:GdiCanvas Shapes="{Binding Balls}" />
+        <!--<local:DrawingControl x:Name="Canvas" Balls="{Binding Balls}" />-->
+        <!--<controls:GdiCanvas Shapes="{Binding Balls}" />-->
+        <Border BorderThickness="1"
+                BorderBrush="Aqua">
+            <controls:SkiaCanvas x:Name="Canvas"
+                                 Shapes="{Binding Balls}" />
+            <!--<controls:SkiaImageControl x:Name="Canvas"
+                                       Shapes="{Binding Balls}" />-->
+        </Border>
+        <TextBlock Grid.Column="1"
+                   Text="{Binding Path=FrameRate, ElementName=Canvas, StringFormat='{}{0:00.000} fps'}"
+                   Foreground="AliceBlue" />
     </Grid>
 </Window>

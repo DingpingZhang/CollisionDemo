@@ -16,8 +16,8 @@ namespace CollisionDemo.Controls
     public class GdiCanvas : Control
     {
         private const string ImageName = "PART_Image";
-        private const int WIDTH = 1400;
-        private const int HEIGHT = 800;
+        private const int WIDTH = 1000;
+        private const int HEIGHT = 1000;
 
         private Image _image;
         private WriteableBitmap _wb;
@@ -64,7 +64,7 @@ namespace CollisionDemo.Controls
 
             _bitmapGraphics = Graphics.FromImage(b);
             _bitmapGraphics.InterpolationMode = InterpolationMode.Default;
-            _bitmapGraphics.SmoothingMode = SmoothingMode.Default;
+            _bitmapGraphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             _image.Source = _wb;
             _image.Stretch = Stretch.None;

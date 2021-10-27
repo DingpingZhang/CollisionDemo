@@ -23,10 +23,10 @@ namespace CollisionDemo
         public MainWindowViewModel()
         {
             const float width = 1000;
-            const float height = 600;
-            const float minRadius = 20;
-            const float maxRadius = 30;
-            var balls = Enumerable.Range(0, 30).Select(i =>
+            const float height = 1000;
+            const float minRadius = 2;
+            const float maxRadius = 3;
+            var balls = Enumerable.Range(0, 200).Select(i =>
             {
                 var weight = GetRandom(minRadius, maxRadius);
                 return new Circle
