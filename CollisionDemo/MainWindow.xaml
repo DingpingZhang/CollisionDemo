@@ -22,8 +22,10 @@
                                            Shapes="{Binding Balls}" />-->
             <!--<controls:GdiCanvas x:Name="Canvas"
                                 Shapes="{Binding Balls}" />-->
-            <controls:SkiaCanvas x:Name="Canvas"
-                                 Shapes="{Binding Balls}" />
+            <!--<controls:SkiaCanvas x:Name="Canvas"
+                                 Shapes="{Binding Balls}" />-->
+            <controls:D2D11Canvas x:Name="Canvas"
+                                  Shapes="{Binding Balls}" />
         </Border>
         <TextBlock Grid.Column="1"
                    Text="{Binding Path=FrameRate, ElementName=Canvas, StringFormat='{}{0:00.000} fps'}"
