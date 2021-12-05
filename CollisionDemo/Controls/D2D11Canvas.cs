@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using CollisionDemo.SharpDX;
+using CollisionDemo.SharpD2D;
 using PhysicsEngine2D.Net;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D;
@@ -45,7 +45,7 @@ namespace CollisionDemo.Controls
                     d2DRenderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(x1, y1), brush, 0.1f);
                 }
             }
-
+           
             d2DRenderTarget.EndDraw();
             device!.ImmediateContext.Flush();
 
@@ -110,14 +110,12 @@ namespace CollisionDemo.Controls
             renderTarget = new Texture2D(device, renderDesc);
 
             var surface = renderTarget.QueryInterface<Surface>();
-
             d2DFactory = new Factory();
             var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, global::SharpDX.Direct2D1.AlphaMode.Premultiplied));
             d2DRenderTarget = new RenderTarget(d2DFactory, surface, rtp);
             brush = new SolidColorBrush(d2DRenderTarget, new RawColor4(1f, 1f, 1f, 1f));
 
             d3DSurface.SetRenderTarget(renderTarget);
-
             device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);
         }
     }

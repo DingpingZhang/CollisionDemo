@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CollisionDemo.SharpDX
+namespace CollisionDemo.SharpD2D
 {
     public static class Disposer
     {

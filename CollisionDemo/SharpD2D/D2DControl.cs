@@ -8,7 +8,7 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 
-namespace CollisionDemo.SharpDX
+namespace CollisionDemo.SharpD2D
 {
     public abstract class D2DControl : System.Windows.Controls.Image
     {
@@ -167,7 +167,7 @@ namespace CollisionDemo.SharpDX
             var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, global::SharpDX.Direct2D1.AlphaMode.Premultiplied));
             d2DRenderTarget = new RenderTarget(d2DFactory, surface, rtp);
             resCache.RenderTarget = d2DRenderTarget;
-
+              
             d3DSurface.SetRenderTarget(renderTarget);
 
             device.ImmediateContext.Rasterizer.SetViewport(0, 0, width, height);

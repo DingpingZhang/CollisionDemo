@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CollisionDemo.SharpDX
+namespace CollisionDemo.SharpD2D
 {
     public static class NativeMethods
     {

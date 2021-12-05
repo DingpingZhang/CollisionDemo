@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SharpDX.Direct2D1;
 
-namespace CollisionDemo.SharpDX
+namespace CollisionDemo.SharpD2D
 {
     public class ResourceCache
     {

@@ -5,7 +5,7 @@ using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.Direct3D9;
 
-namespace CollisionDemo.SharpDX
+namespace CollisionDemo.SharpD2D
 {
     public class Dx11ImageSource : D3DImage, IDisposable
     {
