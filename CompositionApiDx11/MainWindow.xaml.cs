@@ -8,6 +8,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using PhysicsEngine2D.Net;
 using SharpDX.Direct2D1;
+using SharpDX.Direct3D11;
+using SharpDX.DirectWrite;
+using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using SolidColorBrush = SharpDX.Direct2D1.SolidColorBrush;
 
@@ -19,6 +22,8 @@ namespace CompositionApiDx11
     public partial class MainWindow
     {
         private static readonly Random Random = new();
+        private SharpDX.Direct2D1.BitmapRenderTarget _bitmap;
+
         //private WindowRenderTarget _renderTarget = null!;
         private List<Circle> _circles;
 
@@ -36,24 +41,47 @@ namespace CompositionApiDx11
             InitializeComponent();
 
             Loaded += OnLoaded;
-            Host.MouseMove += HostOnMouseMove;
-            Host.MouseWheel += HostOnMouseWheel;
-            Host.MouseEnter += HostOnMouseEnter;
+            Host.SizeChanged += HostOnSizeChanged;
 
             InitBalls();
         }
 
-        private void HostOnMouseEnter(object sender, MouseEventArgs e)
+        private void HostOnSizeChanged(object sender, SizeChangedEventArgs e)
         {
+            if (_bitmap is null)
+            {
+                return;
+            }
+
+            //DrawMesh(_bitmap);
         }
 
-        private void HostOnMouseWheel(object sender, MouseWheelEventArgs e)
+        private SharpDX.Direct2D1.BitmapRenderTarget CreateBitmap()
         {
+            var renderTarget =
+                new SharpDX.Direct2D1.BitmapRenderTarget(Host.RenderTarget, CompatibleRenderTargetOptions.None);
+
+            DrawMesh(renderTarget);
+
+            return renderTarget;
         }
 
-        private void HostOnMouseMove(object sender, MouseEventArgs e)
+        private static void DrawMesh(RenderTarget renderTarget)
         {
+            var random = new Random();
+            var width = random.Next(10, 20);
+            renderTarget.BeginDraw();
 
+            renderTarget.Clear(new RawColor4(0, 0, 0, 0));
+            var brush = new SolidColorBrush(renderTarget, new RawColor4(1f, 0f, 0f, 1));
+
+            for (int i = 0; i < 100; i++)
+            {
+                renderTarget.DrawLine(new RawVector2(0, i * width), new RawVector2(1000, i * width), brush, 0.5f);
+                renderTarget.DrawLine(new RawVector2(i * width, 0), new RawVector2(i * width, 1000), brush, 0.5f);
+            }
+
+            renderTarget.EndDraw();
         }
 
         private void InitBalls()
@@ -142,8 +170,6 @@ namespace CompositionApiDx11
                 float x0 = circle.Position.X;
                 float y0 = circle.Position.Y;
 
-                renderTarget.DrawEllipse(new Ellipse(new RawVector2(circle.Position.X, circle.Position.Y), circle.Radius, circle.Radius), _circleBrush);
-
                 for (int j = i + 1; j < circles.Count; j++)
                 {
                     float x1 = circles[j].Position.X;
@@ -151,17 +177,33 @@ namespace CompositionApiDx11
 
                     renderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(x1, y1), _lineBrush, 0.1f);
                 }
+
+                renderTarget.DrawEllipse(new Ellipse(new RawVector2(circle.Position.X, circle.Position.Y), circle.Radius, circle.Radius), _circleBrush, 2f);
+                renderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(circle.Velocity.X + x0, circle.Velocity.Y + y0), _circleBrush, 1f);
+                renderTarget.DrawText(
+                    $"坐标：({x0}, {y0})",
+                    new TextFormat(new SharpDX.DirectWrite.Factory(), "Microsoft YaHei", 12f),
+                    new RawRectangleF(x0 - 100, y0 - circle.Radius - 18, x0 + 200, y0 + 50), _circleBrush);
             }
+
+            renderTarget.DrawBitmap(_bitmap.Bitmap, 1f, BitmapInterpolationMode.Linear);
 
             renderTarget.EndDraw();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            _lineBrush = new(Host.RenderTarget, new RawColor4(1f, 1f, 1f, 0.2f));
-            _circleBrush = new(Host.RenderTarget, new RawColor4(0f, 1f, 0f, 1f));
+            _lineBrush = new(Host.RenderTarget, new RawColor4(0f, 1f, 0f, 0.2f));
+            _circleBrush = new(Host.RenderTarget, new RawColor4(1f, 1f, 1f, 1f));
+
+            _bitmap = CreateBitmap();
 
             CompositionTarget.Rendering += CompositionTargetOnRendering;
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            DrawMesh(_bitmap);
         }
     }
 }

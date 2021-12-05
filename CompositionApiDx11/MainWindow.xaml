@@ -8,9 +8,10 @@
         Title="MainWindow"
         Height="450"
         Width="800">
-    <Grid x:Name="Bound">
+    <Grid x:Name="Bound"
+          Background="BurlyWood">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
+            <ColumnDefinition Width="2*" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <!--<Border Padding="50">
@@ -22,8 +23,9 @@
         </Border>-->
         <local:Direct2D1Host x:Name="Host"
                              Margin="20" />
-        <Grid Grid.Column="1">
+        <StackPanel Grid.Column="1">
             <TextBlock Text="{Binding Path=FrameRate, StringFormat='{}{0:00.0} fps', RelativeSource={RelativeSource AncestorType=local:MainWindow}}" />
-        </Grid>
+            <Button Content="Click" Click="ButtonBase_OnClick" />
+        </StackPanel>
     </Grid>
 </Window>
