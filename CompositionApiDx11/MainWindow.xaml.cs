@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using PhysicsEngine2D.Net;
+using SharpDX;
 using SharpDX.Direct2D1;
-using SharpDX.Direct3D11;
 using SharpDX.DirectWrite;
-using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
+using GeometryGroup = SharpDX.Direct2D1.GeometryGroup;
 using SolidColorBrush = SharpDX.Direct2D1.SolidColorBrush;
 
 namespace CompositionApiDx11
@@ -42,9 +42,24 @@ namespace CompositionApiDx11
 
             Loaded += OnLoaded;
             Host.SizeChanged += HostOnSizeChanged;
-
+            Host.MouseMove += HostOnMouseMove;
+            Host.MessageHook += HostOnMessageHook;
             InitBalls();
         }
+
+        private IntPtr HostOnMessageHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        {
+
+
+            return IntPtr.Zero;
+        }
+
+        private void HostOnMouseMove(object sender, MouseEventArgs e)
+        {
+            Mouse.GetPosition((IInputElement)sender);
+            e.MouseDevice.GetPosition((IInputElement)e.OriginalSource);
+        }
+
 
         private void HostOnSizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -59,7 +74,7 @@ namespace CompositionApiDx11
         private SharpDX.Direct2D1.BitmapRenderTarget CreateBitmap()
         {
             var renderTarget =
-                new SharpDX.Direct2D1.BitmapRenderTarget(Host.RenderTarget, CompatibleRenderTargetOptions.None);
+                new SharpDX.Direct2D1.BitmapRenderTarget(Host.RenderTarget, CompatibleRenderTargetOptions.None, new Size2F(2000, 2000));
 
             DrawMesh(renderTarget);
 
@@ -69,16 +84,16 @@ namespace CompositionApiDx11
         private static void DrawMesh(RenderTarget renderTarget)
         {
             var random = new Random();
-            var width = random.Next(10, 20);
+            var width = random.Next(1, 50);
             renderTarget.BeginDraw();
 
             renderTarget.Clear(new RawColor4(0, 0, 0, 0));
-            var brush = new SolidColorBrush(renderTarget, new RawColor4(1f, 0f, 0f, 1));
+            var brush = new SolidColorBrush(renderTarget, new RawColor4(1f, 1f, 1f, 1));
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 2000; i++)
             {
-                renderTarget.DrawLine(new RawVector2(0, i * width), new RawVector2(1000, i * width), brush, 0.5f);
-                renderTarget.DrawLine(new RawVector2(i * width, 0), new RawVector2(i * width, 1000), brush, 0.5f);
+                renderTarget.DrawLine(new RawVector2(0, i * width), new RawVector2(2000, i * width), brush, 0.5f);
+                renderTarget.DrawLine(new RawVector2(i * width, 0), new RawVector2(i * width, 2000), brush, 0.5f);
             }
 
             renderTarget.EndDraw();
@@ -90,7 +105,7 @@ namespace CompositionApiDx11
             const float height = 1000;
             const float minRadius = 10;
             const float maxRadius = 15;
-            _circles = Enumerable.Range(0, 200).Select(_ =>
+            _circles = Enumerable.Range(0, 100).Select(_ =>
             {
                 var weight = GetRandom(minRadius, maxRadius);
                 return new Circle
@@ -177,6 +192,14 @@ namespace CompositionApiDx11
 
                     renderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(x1, y1), _lineBrush, 0.1f);
                 }
+            }
+
+            for (int i = 0; i < circles.Count; i++)
+            {
+                Circle circle = circles[i];
+
+                float x0 = circle.Position.X;
+                float y0 = circle.Position.Y;
 
                 renderTarget.DrawEllipse(new Ellipse(new RawVector2(circle.Position.X, circle.Position.Y), circle.Radius, circle.Radius), _circleBrush, 2f);
                 renderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(circle.Velocity.X + x0, circle.Velocity.Y + y0), _circleBrush, 1f);
@@ -203,7 +226,7 @@ namespace CompositionApiDx11
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            DrawMesh(_bitmap);
+            Task.Run(() => DrawMesh(_bitmap));
         }
     }
 }

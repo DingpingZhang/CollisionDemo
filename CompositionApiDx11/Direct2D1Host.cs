@@ -65,7 +65,7 @@ namespace CompositionApiDx11
 
         private static WindowRenderTarget CreateRenderTarget(IntPtr hwnd)
         {
-            const float dpi = 120f;
+            const float dpi = 120;
 
             var hwndRenderTargetProperties = new HwndRenderTargetProperties
             {
