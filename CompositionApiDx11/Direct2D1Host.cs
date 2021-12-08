@@ -33,6 +33,7 @@ namespace CompositionApiDx11
         internal static extern bool DestroyWindow(IntPtr hwnd);
 
         private IntPtr _hwndHost;
+        private Size2F _scale;
 
         public WindowRenderTarget RenderTarget { get; private set; } = null!;
 
@@ -51,7 +52,8 @@ namespace CompositionApiDx11
                 IntPtr.Zero,
                 0);
 
-            RenderTarget = CreateRenderTarget(_hwndHost);
+            RenderTarget = CreateRenderTarget(_hwndHost, out Size2F dpi);
+            _scale = new Size2F(dpi.Width / 96, dpi.Height / 96);
 
             return new HandleRef(this, _hwndHost);
         }
@@ -63,32 +65,32 @@ namespace CompositionApiDx11
             RenderTarget?.Resize(ToSize2(sizeInfo.NewSize));
         }
 
-        private static WindowRenderTarget CreateRenderTarget(IntPtr hwnd)
+        private static WindowRenderTarget CreateRenderTarget(IntPtr hwnd, out Size2F dpi)
         {
-            const float dpi = 120;
+            var factory = new SharpDX.Direct2D1.Factory(FactoryType.MultiThreaded);
 
+            dpi = factory.DesktopDpi;
+            var renderTargetProperties = new RenderTargetProperties(
+                RenderTargetType.Hardware,
+                new PixelFormat(Format.Unknown, AlphaMode.Premultiplied),
+                dpi.Width,
+                dpi.Height,
+                RenderTargetUsage.None,
+                FeatureLevel.Level_DEFAULT);
             var hwndRenderTargetProperties = new HwndRenderTargetProperties
             {
                 Hwnd = hwnd,
                 PixelSize = Size2.Zero,
                 PresentOptions = PresentOptions.RetainContents,
             };
-
-            var factory = new SharpDX.Direct2D1.Factory(FactoryType.MultiThreaded);
-
-            WindowRenderTarget renderTarget = new(
+            var renderTarget = new WindowRenderTarget(
                 factory,
-                new RenderTargetProperties(
-                    RenderTargetType.Hardware,
-                    new PixelFormat(Format.Unknown, AlphaMode.Premultiplied),
-                    dpi,
-                    dpi,
-                    RenderTargetUsage.None,
-                    FeatureLevel.Level_DEFAULT),
-                hwndRenderTargetProperties);
-
-            renderTarget.AntialiasMode = AntialiasMode.PerPrimitive;
-            renderTarget.TextAntialiasMode = TextAntialiasMode.Cleartype;
+                renderTargetProperties,
+                hwndRenderTargetProperties)
+            {
+                AntialiasMode = AntialiasMode.PerPrimitive,
+                TextAntialiasMode = TextAntialiasMode.Cleartype
+            };
 
             return renderTarget;
         }
@@ -125,14 +127,14 @@ namespace CompositionApiDx11
             _ = DestroyWindow(hwnd.Handle);
         }
 
-        private static Size2 ToSize2(Size size)
+        private Size2 ToSize2(Size size)
         {
-            return new Size2((int)Math.Round(size.Width / 0.8), (int)Math.Round(size.Height / 0.8));
+            return new((int)Math.Round(size.Width * _scale.Width), (int)Math.Round(size.Height * _scale.Height));
         }
 
         private static Point GetPointFromLParam(IntPtr lParam)
         {
-            return new Point((int)lParam & 0xFFFF, ((int)lParam >> 16) & 0xFFFF);
+            return new((int)lParam & 0xFFFF, ((int)lParam >> 16) & 0xFFFF);
         }
     }
 

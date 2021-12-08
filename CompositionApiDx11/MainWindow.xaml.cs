@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -24,7 +25,6 @@ namespace CompositionApiDx11
         private static readonly Random Random = new();
         private SharpDX.Direct2D1.BitmapRenderTarget _bitmap;
 
-        //private WindowRenderTarget _renderTarget = null!;
         private List<Circle> _circles;
 
         public static readonly DependencyProperty FrameRateProperty = DependencyProperty.Register(
@@ -42,7 +42,6 @@ namespace CompositionApiDx11
 
             Loaded += OnLoaded;
             Host.SizeChanged += HostOnSizeChanged;
-            Host.MouseMove += HostOnMouseMove;
             Host.MessageHook += HostOnMessageHook;
             InitBalls();
         }
@@ -53,13 +52,6 @@ namespace CompositionApiDx11
 
             return IntPtr.Zero;
         }
-
-        private void HostOnMouseMove(object sender, MouseEventArgs e)
-        {
-            Mouse.GetPosition((IInputElement)sender);
-            e.MouseDevice.GetPosition((IInputElement)e.OriginalSource);
-        }
-
 
         private void HostOnSizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -105,7 +97,7 @@ namespace CompositionApiDx11
             const float height = 1000;
             const float minRadius = 10;
             const float maxRadius = 15;
-            _circles = Enumerable.Range(0, 100).Select(_ =>
+            _circles = Enumerable.Range(0, 200).Select(_ =>
             {
                 var weight = GetRandom(minRadius, maxRadius);
                 return new Circle
@@ -190,7 +182,7 @@ namespace CompositionApiDx11
                     float x1 = circles[j].Position.X;
                     float y1 = circles[j].Position.Y;
 
-                    renderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(x1, y1), _lineBrush, 0.1f);
+                    renderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(x1, y1), _lineBrush, 0.2f);
                 }
             }
 
@@ -205,21 +197,26 @@ namespace CompositionApiDx11
                 renderTarget.DrawLine(new RawVector2(x0, y0), new RawVector2(circle.Velocity.X + x0, circle.Velocity.Y + y0), _circleBrush, 1f);
                 renderTarget.DrawText(
                     $"坐标：({x0}, {y0})",
-                    new TextFormat(new SharpDX.DirectWrite.Factory(), "Microsoft YaHei", 12f),
+                    _textFormat,
                     new RawRectangleF(x0 - 100, y0 - circle.Radius - 18, x0 + 200, y0 + 50), _circleBrush);
             }
 
             renderTarget.DrawBitmap(_bitmap.Bitmap, 1f, BitmapInterpolationMode.Linear);
-
             renderTarget.EndDraw();
         }
 
+        private SharpDX.DirectWrite.Factory _writeFactory;
+        private TextFormat _textFormat;
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            _lineBrush = new(Host.RenderTarget, new RawColor4(0f, 1f, 0f, 0.2f));
+            _lineBrush = new(Host.RenderTarget, new RawColor4(0f, 1f, 0f, 0.5f));
             _circleBrush = new(Host.RenderTarget, new RawColor4(1f, 1f, 1f, 1f));
 
             _bitmap = CreateBitmap();
+
+            _writeFactory = new SharpDX.DirectWrite.Factory();
+            _textFormat = new TextFormat(_writeFactory, "Microsoft YaHei", 12f);
 
             CompositionTarget.Rendering += CompositionTargetOnRendering;
         }

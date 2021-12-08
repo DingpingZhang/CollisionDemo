@@ -111,7 +111,13 @@ namespace CollisionDemo.Controls
 
             var surface = renderTarget.QueryInterface<Surface>();
             d2DFactory = new Factory();
-            var rtp = new RenderTargetProperties(new PixelFormat(Format.Unknown, global::SharpDX.Direct2D1.AlphaMode.Premultiplied));
+            var rtp = new RenderTargetProperties(
+                RenderTargetType.Hardware,
+                new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied),
+                d2DFactory.DesktopDpi.Width,
+                d2DFactory.DesktopDpi.Height,
+                RenderTargetUsage.None,
+                FeatureLevel.Level_DEFAULT);
             d2DRenderTarget = new RenderTarget(d2DFactory, surface, rtp);
             brush = new SolidColorBrush(d2DRenderTarget, new RawColor4(1f, 1f, 1f, 1f));
 
